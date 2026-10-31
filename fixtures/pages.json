@@ -1,0 +1,88 @@
+{
+  "pages": [
+    {
+      "page_id": "nw-sleep-001",
+      "publisher": "Northwind Daily",
+      "title": "Why your sleep gets worse in your forties",
+      "body": [
+        "Sleep architecture changes with age: deep sleep shortens and night waking becomes more frequent.",
+        "Researchers point to shifting melatonin rhythms, caffeine sensitivity and late screen use as the main levers people can control.",
+        "A consistent wake time does more for sleep quality than a consistent bedtime.",
+        "Keeping the bedroom cool, around 18 degrees Celsius, helps most adults fall asleep faster."
+      ],
+      "queries": [
+        {"q": "why do I wake up at 3am every night", "ad_relevant": true},
+        {"q": "best bedroom temperature for sleep", "ad_relevant": true},
+        {"q": "does caffeine affect deep sleep", "ad_relevant": false},
+        {"q": "how much deep sleep do adults need", "ad_relevant": false}
+      ],
+      "ad": {
+        "ad_id": "ad-luma-07",
+        "advertiser": "Luma Rest",
+        "claims": [
+          "Luma Rest's cooling mattress topper lowers surface temperature by up to 3 degrees overnight",
+          "Luma Rest offers a 100-night home trial with free returns"
+        ],
+        "cta_text": "Try Luma Rest for 100 nights",
+        "click_url": "/c/luma-q4/topper?i=ad-luma-07",
+        "disclosure": "Sponsored content. Supplied by Luma Rest."
+      }
+    },
+    {
+      "page_id": "cl-ev-014",
+      "publisher": "Coastline Ledger",
+      "title": "What a used EV battery report actually tells you",
+      "body": [
+        "A battery health report estimates remaining capacity as a percentage of the original pack.",
+        "Fast-charging history and climate matter more than mileage for long-term degradation.",
+        "Most packs lose capacity quickly in the first two years and then settle into a slow decline.",
+        "Buyers should ask for a recent state-of-health reading rather than relying on the dashboard range estimate."
+      ],
+      "queries": [
+        {"q": "how to check a used EV battery before buying", "ad_relevant": true},
+        {"q": "is fast charging bad for EV batteries", "ad_relevant": false},
+        {"q": "what battery health percentage is good for a used EV", "ad_relevant": true},
+        {"q": "how fast do EV batteries degrade", "ad_relevant": false}
+      ],
+      "ad": {
+        "ad_id": "ad-voltcheck-02",
+        "advertiser": "VoltCheck",
+        "claims": [
+          "VoltCheck runs a certified battery state-of-health test in 15 minutes at your driveway",
+          "VoltCheck reports include a cell-level degradation map and a resale value estimate"
+        ],
+        "cta_text": "Book a VoltCheck battery test",
+        "click_url": "/c/voltcheck-q4/book?i=ad-voltcheck-02",
+        "disclosure": "Sponsored content. Supplied by VoltCheck."
+      }
+    },
+    {
+      "page_id": "ht-pasta-022",
+      "publisher": "Hearth & Table",
+      "title": "The fastest weeknight pasta that still tastes slow-cooked",
+      "body": [
+        "Blooming tomato paste in olive oil for two minutes builds the deep flavor of a long-simmered sauce.",
+        "Starchy pasta water is the binder that turns a thin sauce glossy and clingy.",
+        "Finishing the pasta in the pan for the last minute lets it absorb the sauce instead of sitting under it.",
+        "A splash of acid at the end, lemon or vinegar, brightens the whole dish."
+      ],
+      "queries": [
+        {"q": "quick weeknight pasta that tastes good", "ad_relevant": true},
+        {"q": "why add pasta water to sauce", "ad_relevant": false},
+        {"q": "how to make tomato sauce taste richer fast", "ad_relevant": true},
+        {"q": "should you finish pasta in the sauce", "ad_relevant": false}
+      ],
+      "ad": {
+        "ad_id": "ad-ferro-11",
+        "advertiser": "Ferro Pantry",
+        "claims": [
+          "Ferro Pantry's bronze-cut pasta holds twice as much sauce as smooth extruded pasta",
+          "Ferro Pantry ships a weeknight pasta kit with sauce base and pasta for four"
+        ],
+        "cta_text": "Get the Ferro Pantry weeknight kit",
+        "click_url": "/c/ferro-q4/kit?i=ad-ferro-11",
+        "disclosure": "Sponsored content. Supplied by Ferro Pantry."
+      }
+    }
+  ]
+}

@@ -93,6 +93,10 @@ a{color:var(--accent)}
     declared user-agent token &rarr; source IP verified against the operator &rarr; session behaviour.</p>
     <div id="traffic"></div>
     <div style="margin-top:14px"><table id="trafficTable"></table></div>
+    <h2 style="margin-top:22px">Where to set the page-count threshold</h2>
+    <p class="sub" id="sweepSub">A verified user-agent token that fetches more pages than the threshold is treated as a crawler.
+    Lower thresholds reject more genuine sessions; higher ones bill more relayed, scripted sessions that come from real operator IPs.</p>
+    <table id="sweepTable"></table>
   </section>
 
   <section class="card">
@@ -190,6 +194,15 @@ document.getElementById("trafficTable").innerHTML =
   Object.values(pc).map(c => `<tr><td>${esc(c.label)}</td><td class="n">${fmt(c.truth)}</td><td class="n">${fmt(c.predicted)}</td>
    <td class="n">${pct(c.precision)}</td><td class="n">${pct(c.recall)}</td></tr>`).join("");
 
+const sw = R.traffic.threshold_sweep || [];
+document.getElementById("sweepTable").innerHTML = sw.length ?
+  `<tr><th class="n">Max pages</th><th class="n">Genuine sessions rejected</th><th class="n">Invalid sessions billed</th>
+   <th class="n">Invalid page fetches billed</th><th class="n">Billable vs truth</th></tr>` +
+  sw.map(r => `<tr${r.max_user_pages === R.traffic.max_user_pages ? ' style="font-weight:600"' : ""}><td class="n">${r.max_user_pages}${r.max_user_pages === R.traffic.max_user_pages ? " (default)" : ""}</td>
+   <td class="n">${pct(r.genuine_sessions_rejected)}</td><td class="n">${fmt(r.invalid_sessions_billed)}</td>
+   <td class="n">${fmt(r.invalid_page_fetches_billed)}</td>
+   <td class="n">${r.billable_vs_truth == null ? "n/a" : (r.billable_vs_truth >= 0 ? "+" : "") + pct(r.billable_vs_truth)}</td></tr>`).join("") : "";
+if (!sw.length) document.getElementById("sweepSub").style.display = "none";
 document.getElementById("page").textContent = R.sample_page;
 document.getElementById("examples").innerHTML = R.examples.map(e =>
   `<div class="ex"><div class="meta">${esc(e.agent)} · “${esc(e.query)}”</div>

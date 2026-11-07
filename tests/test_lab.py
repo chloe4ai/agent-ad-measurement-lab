@@ -119,3 +119,18 @@ def test_run_with_no_delivered_ads_reports_undefined_overcount(tmp_path, capsys)
     run_mod.main_args(["--n", "1", "--seed", "3", "--out", str(out)])
     assert "undefined" in capsys.readouterr().out
     assert json.loads(out.read_text())["funnel"]["overcount_if_billed_on_fetch"] is None
+
+
+def test_relayed_session_from_a_verified_ip_is_caught_only_by_behaviour():
+    s = Session(_ua("ChatGPT-User"), True, 12, False, 1.0, 0, False, "invalid")
+    assert classify(s)[0] == "invalid"
+    assert classify(s, max_user_pages=20)[0] == "user_agent"
+
+
+def test_page_threshold_trades_genuine_rejections_for_invalid_billing():
+    from lab.traffic import threshold_sweep
+    rows = threshold_sweep(generate(4000, seed=42))
+    rejected = [r["genuine_sessions_rejected"] for r in rows]
+    billed = [r["invalid_sessions_billed"] for r in rows]
+    assert rejected == sorted(rejected, reverse=True) and rejected[0] > rejected[-1]
+    assert billed == sorted(billed) and billed[0] < billed[-1]

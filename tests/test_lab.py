@@ -142,3 +142,12 @@ def test_robustness_readout_brackets_each_figure():
     assert rb["seeds"] == [1, 2, 3]
     for spread in [rb["overcount_if_billed_on_fetch"]] + [a["clicks_per_1k_fetches"] for a in rb["agents"]]:
         assert spread["min"] <= spread["median"] <= spread["max"]
+
+
+def test_heldout_set_is_scored_and_every_disclosure_case_is_an_included_ad():
+    from lab.heldout import evaluate
+    r = evaluate()
+    for k in ("disclosure", "inclusion"):
+        v = r[k]
+        assert v["cases"] == v["tp"] + v["fp"] + v["fn"] + v["tn"] > 0
+        assert len(v["errors"]) == v["fp"] + v["fn"]

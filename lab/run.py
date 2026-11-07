@@ -11,7 +11,7 @@ import random
 import statistics
 from pathlib import Path
 
-from . import traffic
+from . import heldout, traffic
 from .agents import PROFILES, answer
 from .detect import detect
 from .page import load_pages, render_agent_markdown
@@ -60,6 +60,8 @@ def robustness(n_per_agent: int, seeds=ROBUSTNESS_SEEDS) -> dict:
 def run(n_per_agent: int = 600, seed: int = 42, robustness_seeds=ROBUSTNESS_SEEDS) -> dict:
     """One full run at `seed`, plus a min/median/max readout across `robustness_seeds`."""
     res = _simulate(n_per_agent, seed)
+    # Wording the detector was not written for; see fixtures/heldout.json.
+    res["detector_validation"]["heldout"] = heldout.evaluate()
     if robustness_seeds:
         res["robustness"] = robustness(n_per_agent, robustness_seeds)
     return res
@@ -180,8 +182,12 @@ def main_args(argv: list[str] | None = None) -> None:
     else:
         print(f"Billing on fetches would overcount delivered, labeled ads by {over:.1f}x "
               f"(fetches / detected included-and-labeled answers)")
-    for k, v in res["detector_validation"].items():
+    for k in ("inclusion", "disclosure"):
+        v = res["detector_validation"][k]
         print(f"{k.capitalize()} detector vs ground truth: precision {v['precision']:.3f}, recall {v['recall']:.3f}")
+    for k, v in res["detector_validation"]["heldout"].items():
+        print(f"Held-out {k} ({v['cases']} hand-written answers): precision {v['precision']:.3f}, "
+              f"recall {v['recall']:.3f}")
     rb = res["robustness"]["overcount_if_billed_on_fetch"]
     if rb["n"]:
         print(f"Across seeds {res['robustness']['seeds'][0]}-{res['robustness']['seeds'][-1]}: overcount "

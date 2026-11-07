@@ -22,7 +22,13 @@ jobs:
         with:
           python-version: "3.12"
       - run: pip install pytest && python -m pytest -q
-      - run: python -m lab.run && python scripts/build_dashboard.py
+      - name: Regenerate results and check they match the committed files
+        run: |
+          python -m lab.run && python scripts/build_dashboard.py
+          git diff --exit-code -- docs/results.json docs/index.html || {
+            echo "::error::docs/results.json or docs/index.html is out of date. Run python -m lab.run && python scripts/build_dashboard.py and commit the result."
+            exit 1
+          }
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

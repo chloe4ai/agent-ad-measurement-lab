@@ -151,3 +151,35 @@ def test_heldout_set_is_scored_and_every_disclosure_case_is_an_included_ad():
         v = r[k]
         assert v["cases"] == v["tp"] + v["fp"] + v["fn"] + v["tn"] > 0
         assert len(v["errors"]) == v["fp"] + v["fn"]
+
+
+def test_readme_headline_numbers_match_results_json():
+    import re
+    from pathlib import Path
+    root = Path(__file__).resolve().parent.parent
+    readme = (root / "README.md").read_text()
+    r = json.loads((root / "docs" / "results.json").read_text())
+    f, v, pf = r["funnel"], r["detector_validation"], r["traffic"]["page_fetches"]
+    pct = lambda x: f"{100 * x:.1f}%"
+    funnel = f"{f['fetched']:,} → {f['included']:,} → {f['included_and_disclosed']:,} → {f['clicks']:,}"
+    assert funnel in readme
+    over = f"{f['overcount_if_billed_on_fetch']:.1f}×"
+    assert f"**{over}**" in readme and f"The {over} is fetches" in readme
+    assert f"{f['fetched']:,} ÷ {f['included_and_disclosed']:,}" in readme
+    rb = r["robustness"]["overcount_if_billed_on_fetch"]
+    assert f"{rb['min']:.1f}× to {rb['max']:.1f}×, median {rb['median']:.1f}×" in readme
+    assert f"precision {pct(v['inclusion']['precision'])}, recall {pct(v['inclusion']['recall'])}" in readme
+    h = v["heldout"]["disclosure"]
+    assert f"precision {pct(h['precision'])}, recall {pct(h['recall'])} ({h['cases']} hand-written" in readme
+    share = f"{pct(pf['billable_after_rules'] / pf['declared_user_agent'])} " \
+            f"({pf['billable_after_rules']:,} of {pf['declared_user_agent']:,})"
+    assert share in readme
+    for a in r["agents"]:
+        row = (f"| {a['agent']} | {pct(a['inclusion'][0])} | {pct(a['disclosure_survival'][0])} | "
+               f"{pct(a['link_survival'][0])} | {a['clicks_per_1k_fetches']:.1f} |")
+        assert row in readme, row
+    default = next(x for x in r["traffic"]["threshold_sweep"]
+                   if x["max_user_pages"] == r["traffic"]["max_user_pages"])
+    assert f"lands {pct(-default['billable_vs_truth'])} below" in readme
+    n_tests = len(re.findall(r"^def test_", (root / "tests" / "test_lab.py").read_text(), re.M))
+    assert f"# {n_tests} tests" in readme

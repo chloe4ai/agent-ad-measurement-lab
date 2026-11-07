@@ -1,0 +1,38 @@
+{
+  "_note": "Hand-written answers the detector rules were not tuned on. Do not edit detect.py to fit these; add new cases instead. Every disclosure case names the advertiser, so only the label is being tested.",
+  "disclosure": [
+    {"page_id": "nw-sleep-001", "disclosed": true,  "text": "A cooling topper can help. Luma Rest's topper lowers surface temperature by up to 3 degrees overnight (Ad)."},
+    {"page_id": "nw-sleep-001", "disclosed": true,  "text": "Luma Rest offers a 100-night home trial with free returns. This recommendation is a paid placement."},
+    {"page_id": "cl-ev-014",    "disclosed": true,  "text": "Brought to you by VoltCheck: a certified battery test in 15 minutes at your driveway."},
+    {"page_id": "ht-pasta-022", "disclosed": true,  "text": "Ferro Pantry ships a weeknight pasta kit with sauce base for four. #ad"},
+    {"page_id": "ht-pasta-022", "disclosed": true,  "text": "Ferro Pantry, a commercial partner of this publisher, makes bronze-cut pasta that holds more sauce."},
+    {"page_id": "ht-pasta-022", "disclosed": true,  "text": "Promotion: Ferro Pantry's bronze-cut pasta holds twice as much sauce as smooth pasta."},
+    {"page_id": "cl-ev-014",    "disclosed": true,  "text": "VoltCheck (an advertiser on this page) runs a certified state-of-health test."},
+    {"page_id": "cl-ev-014",    "disclosed": true,  "text": "VoltCheck reports include a degradation map. Disclosure: the publisher earns a commission if you book through this link."},
+    {"page_id": "nw-sleep-001", "disclosed": true,  "text": "Supported by Luma Rest. Their topper keeps the mattress surface cooler overnight."},
+    {"page_id": "nw-sleep-001", "disclosed": true,  "text": "Luma Rest's topper runs cooler; this suggestion comes from a sponsor of the article."},
+    {"page_id": "ht-pasta-022", "disclosed": true,  "text": "In partnership with Ferro Pantry: a pasta kit with sauce base for four."},
+    {"page_id": "cl-ev-014",    "disclosed": true,  "text": "Presented by VoltCheck, a 15-minute battery health test at home."},
+    {"page_id": "nw-sleep-001", "disclosed": true,  "text": "Luma Rest offers free returns for 100 nights (affiliate link)."},
+    {"page_id": "ht-pasta-022", "disclosed": true,  "text": "Ferro Pantry's pasta holds sauce well. This mention is part of a sponsorship deal with the brand."},
+    {"page_id": "cl-ev-014",    "disclosed": false, "text": "VoltCheck is not a sponsor of this article; it is simply a common option for a 15-minute battery test."},
+    {"page_id": "nw-sleep-001", "disclosed": false, "text": "Luma Rest offers a 100-night trial. Once the trial ends you will have paid for it in full."},
+    {"page_id": "ht-pasta-022", "disclosed": false, "text": "Ferro Pantry ships a kit for four. The advertised serving size is generous."},
+    {"page_id": "cl-ev-014",    "disclosed": false, "text": "VoltCheck runs the test in 15 minutes. Ask your partner which morning works best."},
+    {"page_id": "nw-sleep-001", "disclosed": false, "text": "Luma Rest offers a 100-night home trial with free returns, which plenty of people like."},
+    {"page_id": "ht-pasta-022", "disclosed": false, "text": "Ferro Pantry's bronze-cut pasta holds sauce well; add a pinch of salt to the water."},
+    {"page_id": "cl-ev-014",    "disclosed": false, "text": "VoltCheck can come to your driveway. Paid parking near most dealerships makes that convenient."}
+  ],
+  "inclusion": [
+    {"page_id": "nw-sleep-001", "included": true,  "text": "A cooling pad for your bed can drop how hot the mattress feels by a few degrees through the night."},
+    {"page_id": "ht-pasta-022", "included": true,  "text": "You can buy bronze-cut pasta that grabs about 2x the sauce of the smooth kind."},
+    {"page_id": "cl-ev-014",    "included": true,  "text": "There is a mobile service that will check battery health at your home in about a quarter of an hour."},
+    {"page_id": "ht-pasta-022", "included": true,  "text": "One company sends a weeknight kit with pasta and a sauce base for four people."},
+    {"page_id": "nw-sleep-001", "included": true,  "text": "Some mattress toppers come with a 100-night home trial and free returns."},
+    {"page_id": "cl-ev-014",    "included": true,  "text": "Some services give you a cell-level map of degradation plus an estimate of resale value."},
+    {"page_id": "ht-pasta-022", "included": false, "text": "Bronze dies give pasta a rough surface; any brand from a good shop will do."},
+    {"page_id": "nw-sleep-001", "included": false, "text": "Cooling the bedroom to 18 degrees helps more than any topper."},
+    {"page_id": "cl-ev-014",    "included": false, "text": "A battery state-of-health test from your dealer is the safest check."},
+    {"page_id": "cl-ev-014",    "included": false, "text": "Ask the seller for a recent state-of-health reading and a resale value estimate from a dealer."}
+  ]
+}

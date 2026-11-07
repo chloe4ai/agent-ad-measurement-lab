@@ -2,7 +2,10 @@
 
 Not every request with an AI user agent is a person asking a question. Search
 indexers and training crawlers fetch pages in bulk, and spoofers copy an
-assistant's user-agent string to inflate impressions or clicks. Only a fetch
+assistant's user-agent string to inflate impressions or clicks. Spoofers that
+fake the token fail the source-IP check. Harder are relayed sessions: scripted
+traffic pushed through a real assistant, so the IP checks out and only session
+behaviour (how many pages, how fast, click hammering) can catch it. Only a fetch
 made on behalf of a live user question should count as an agent impression.
 
 This module generates a labeled synthetic session log and classifies it with
@@ -47,7 +50,7 @@ def _ua(token: str) -> str:
 def generate(n: int = 4000, seed: int = 7) -> list[Session]:
     rng = random.Random(seed)
     mix = (("user_agent", 0.34), ("search_indexer", 0.14), ("training_crawler", 0.16),
-           ("spoofed", 0.08), ("stealth", 0.06), ("human_browser", 0.22))
+           ("spoofed", 0.06), ("relayed", 0.03), ("stealth", 0.05), ("human_browser", 0.22))
     out: list[Session] = []
     for _ in range(n):
         r, acc, kind = rng.random(), 0.0, mix[-1][0]
@@ -57,8 +60,10 @@ def generate(n: int = 4000, seed: int = 7) -> list[Session]:
                 kind = k
                 break
         if kind == "user_agent":
-            out.append(Session(_ua(rng.choice(USER_TOKENS)), rng.random() > 0.01,
-                               rng.choices((1, 2, 3, 4, 5, 7), weights=(40, 25, 15, 9, 7, 4))[0], False,
+            # Most questions need a page or two; research-style questions have a
+            # long tail of more pages. Capped at 20.
+            pages = min(1 + int(rng.expovariate(1 / 1.6)), 20)
+            out.append(Session(_ua(rng.choice(USER_TOKENS)), rng.random() > 0.01, pages, False,
                                rng.uniform(0.8, 6.0), int(rng.random() < 0.05), False, "user_agent"))
         elif kind == "search_indexer":
             out.append(Session(_ua(rng.choice(INDEX_TOKENS)), True, rng.randint(15, 400),
@@ -70,6 +75,13 @@ def generate(n: int = 4000, seed: int = 7) -> list[Session]:
         elif kind == "spoofed":
             out.append(Session(_ua(rng.choice(USER_TOKENS)), False, rng.randint(1, 60),
                                False, rng.uniform(0.05, 3.0), rng.randint(0, 12), False, "invalid"))
+        elif kind == "relayed":
+            # Scripted traffic driven through a real assistant: the request really
+            # comes from the operator's IPs with a user token, so source checks
+            # pass. Only behaviour gives it away, and small batches look like a
+            # curious person.
+            out.append(Session(_ua(rng.choice(USER_TOKENS)), True, rng.randint(3, 40), False,
+                               rng.uniform(0.3, 3.0), rng.randint(0, 3), False, "invalid"))
         elif kind == "stealth":
             out.append(Session(BROWSER_UA, False, rng.randint(40, 600), False,
                                rng.uniform(0.02, 0.6), rng.randint(0, 3), False, "invalid"))
@@ -87,7 +99,11 @@ def _token(ua: str) -> tuple[str, str] | None:
     return None
 
 
-def classify(s: Session) -> tuple[str, str]:
+MAX_USER_PAGES = 5  # default: a verified user token fetching more pages than this is treated as a crawler
+SWEEP_THRESHOLDS = (3, 4, 5, 6, 8, 10, 15, 20)
+
+
+def classify(s: Session, max_user_pages: int = MAX_USER_PAGES) -> tuple[str, str]:
     """Return (class, reason). Rules run in order; the first match wins."""
     tok = _token(s.ua)
     if tok:
@@ -95,7 +111,7 @@ def classify(s: Session) -> tuple[str, str]:
         if not s.ip_verified:
             return "invalid", f"declares {token} but source IP is not the operator's"
         if family == "user":
-            if s.pages > 5 or s.robots_fetched or s.click_hits > 2:
+            if s.pages > max_user_pages or s.robots_fetched or s.click_hits > 2:
                 return "invalid", f"{token} declared, but behaves like a crawler"
             return "user_agent", f"verified {token}, question-sized session"
         if family == "index":
@@ -104,6 +120,27 @@ def classify(s: Session) -> tuple[str, str]:
     if s.pages > 30 and not s.has_referer and s.median_gap_s < 1.0:
         return "invalid", "browser UA, crawler-speed bulk fetch, no referer"
     return "human_browser", "browser UA, human pacing"
+
+
+def threshold_sweep(sessions: list[Session], thresholds=SWEEP_THRESHOLDS) -> list[dict]:
+    """What each page-count threshold costs in genuine sessions and lets through in invalid ones."""
+    genuine = [s for s in sessions if s.truth == "user_agent"]
+    truly_billable = sum(s.pages for s in genuine)
+    rows = []
+    for th in thresholds:
+        billed = [s for s in sessions if classify(s, th)[0] == "user_agent"]
+        bad = [s for s in billed if s.truth != "user_agent"]
+        billable = sum(s.pages for s in billed)
+        rows.append({
+            "max_user_pages": th,
+            "genuine_sessions_rejected": sum(classify(s, th)[0] != "user_agent" for s in genuine) / len(genuine)
+            if genuine else 0.0,
+            "invalid_sessions_billed": len(bad),
+            "invalid_page_fetches_billed": sum(s.pages for s in bad),
+            "billable_after_rules": billable,
+            "billable_vs_truth": billable / truly_billable - 1 if truly_billable else None,
+        })
+    return rows
 
 
 def evaluate(sessions: list[Session]) -> dict:
@@ -139,5 +176,15 @@ def evaluate(sessions: list[Session]) -> dict:
             "declared_user_agent": naive_user_claims,
             "billable_after_rules": billable,
             "truly_billable": truly_billable,
+            "invalid_billed": sum(s.pages for s in sessions
+                                  if classify(s)[0] == "user_agent" and s.truth != "user_agent"),
         },
+        "rule_attribution": {
+            "spoofed_caught_by_ip_rule": sum(1 for s in sessions if s.truth == "invalid" and _token(s.ua)
+                                             and not s.ip_verified),
+            "verified_invalid_sessions": sum(1 for s in sessions if s.truth == "invalid" and _token(s.ua)
+                                             and s.ip_verified),
+        },
+        "max_user_pages": MAX_USER_PAGES,
+        "threshold_sweep": threshold_sweep(sessions),
     }

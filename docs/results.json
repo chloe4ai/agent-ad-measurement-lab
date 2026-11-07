@@ -10,132 +10,248 @@
       "agent": "Faithful assistant",
       "fetched": 600,
       "inclusion": [
-        0.565,
-        0.5250418771398944,
-        0.6041310715274382
+        0.5716666666666667,
+        0.5317390215919523,
+        0.6106824346310041
       ],
       "disclosure_survival": [
-        0.9233038348082596,
-        0.889995284951739,
-        0.9471259978797495
+        0.9154518950437318,
+        0.8812117232070995,
+        0.9404890185724333
       ],
       "link_survival": [
-        0.8259587020648967,
-        0.7820062230975642,
-        0.8626063326716307
+        0.8104956268221575,
+        0.7656680761277737,
+        0.848445109833772
       ],
-      "delivered_disclosed": 313,
-      "clicks": 16,
-      "clicks_per_1k_fetches": 26.666666666666668,
+      "delivered_disclosed": 314,
+      "clicks": 11,
+      "clicks_per_1k_fetches": 18.333333333333332,
       "inclusion_when_relevant": [
-        0.8694158075601375,
-        0.8258415254092278,
-        0.9033635799761724
+        0.9024390243902439,
+        0.862609972796015,
+        0.9316367924535229
       ]
     },
     {
       "agent": "Summarizing assistant",
       "fetched": 600,
       "inclusion": [
-        0.43666666666666665,
-        0.397507899851003,
-        0.4766312783705704
+        0.43,
+        0.39095472654679364,
+        0.46993594411915596
       ],
       "disclosure_survival": [
-        0.44656488549618323,
-        0.3875707442653088,
-        0.507103377467332
+        0.5038759689922481,
+        0.44325798333515953,
+        0.5643802223586645
       ],
       "link_survival": [
-        0.2748091603053435,
-        0.22430034355011724,
-        0.3318263123231547
+        0.21705426356589147,
+        0.17110033638170247,
+        0.2713106479691417
       ],
-      "delivered_disclosed": 117,
+      "delivered_disclosed": 130,
       "clicks": 3,
       "clicks_per_1k_fetches": 5.0,
       "inclusion_when_relevant": [
-        0.6750788643533123,
-        0.621691692954602,
-        0.7242734188014796
+        0.724907063197026,
+        0.6686573363356911,
+        0.7748234231965796
       ]
     },
     {
       "agent": "Search assistant",
       "fetched": 600,
       "inclusion": [
-        0.375,
-        0.3371725730230294,
-        0.4144179103090233
+        0.425,
+        0.38604460609540475,
+        0.46490968390382686
       ],
       "disclosure_survival": [
-        0.7911111111111111,
-        0.7333277521969257,
-        0.8391206138344252
+        0.8117647058823529,
+        0.7592917134384076,
+        0.854983580795595
       ],
       "link_survival": [
-        0.96,
-        0.9257400559907317,
-        0.9788157590359067
+        0.9372549019607843,
+        0.9005178072038916,
+        0.9610129513758728
       ],
-      "delivered_disclosed": 178,
-      "clicks": 12,
-      "clicks_per_1k_fetches": 20.0,
+      "delivered_disclosed": 207,
+      "clicks": 9,
+      "clicks_per_1k_fetches": 15.0,
       "inclusion_when_relevant": [
-        0.6085526315789473,
-        0.5526583582334088,
-        0.6617376168394857
+        0.6775244299674267,
+        0.6233207818619687,
+        0.7273401335367423
       ]
     },
     {
       "agent": "Sponsorship-averse assistant",
       "fetched": 600,
       "inclusion": [
-        0.04833333333333333,
-        0.03386067991337791,
-        0.06855293319310565
+        0.058333333333333334,
+        0.0422392243817027,
+        0.08004715005821665
       ],
       "disclosure_survival": [
-        1.0,
-        0.8830264055344442,
-        1.0
+        0.9714285714285714,
+        0.8546659090672868,
+        0.9949386386341466
       ],
       "link_survival": [
-        0.5172413793103449,
-        0.3443073797056916,
-        0.6861418066920478
+        0.5714285714285714,
+        0.4085712925897337,
+        0.7201566691832108
       ],
-      "delivered_disclosed": 29,
+      "delivered_disclosed": 34,
       "clicks": 1,
       "clicks_per_1k_fetches": 1.6666666666666667,
       "inclusion_when_relevant": [
-        0.07920792079207921,
-        0.05380247652040525,
-        0.11514984285219611
+        0.09584664536741214,
+        0.06796369053585702,
+        0.1335300527099794
       ]
     }
   ],
   "funnel": {
     "fetched": 2400,
-    "included": 855,
-    "included_and_disclosed": 637,
-    "clicks": 32,
-    "overcount_if_billed_on_fetch": 3.767660910518053
+    "included": 891,
+    "included_and_disclosed": 685,
+    "clicks": 24,
+    "overcount_if_billed_on_fetch": 3.5036496350364965
+  },
+  "ground_truth": {
+    "included": 899,
+    "included_and_disclosed": 685,
+    "linked": 593
   },
   "detector_validation": {
     "inclusion": {
       "precision": 1.0,
-      "recall": 0.9953434225844005,
-      "tp": 855,
+      "recall": 0.9911012235817576,
+      "tp": 891,
       "fp": 0,
-      "fn": 4
+      "fn": 8
     },
     "disclosure": {
       "precision": 1.0,
       "recall": 1.0,
-      "tp": 637,
+      "tp": 685,
       "fp": 0,
       "fn": 0
+    },
+    "heldout": {
+      "disclosure": {
+        "cases": 21,
+        "accuracy": 0.3333333333333333,
+        "precision": 0.5,
+        "recall": 0.2857142857142857,
+        "tp": 4,
+        "fp": 4,
+        "fn": 10,
+        "tn": 3,
+        "errors": [
+          {
+            "text": "A cooling topper can help. Luma Rest's topper lowers surface temperature by up to 3 degrees overnight (Ad).",
+            "expected": true,
+            "detected": false
+          },
+          {
+            "text": "Brought to you by VoltCheck: a certified battery test in 15 minutes at your driveway.",
+            "expected": true,
+            "detected": false
+          },
+          {
+            "text": "Ferro Pantry ships a weeknight pasta kit with sauce base for four. #ad",
+            "expected": true,
+            "detected": false
+          },
+          {
+            "text": "Ferro Pantry, a commercial partner of this publisher, makes bronze-cut pasta that holds more sauce.",
+            "expected": true,
+            "detected": false
+          },
+          {
+            "text": "Promotion: Ferro Pantry's bronze-cut pasta holds twice as much sauce as smooth pasta.",
+            "expected": true,
+            "detected": false
+          },
+          {
+            "text": "VoltCheck reports include a degradation map. Disclosure: the publisher earns a commission if you book through this link.",
+            "expected": true,
+            "detected": false
+          },
+          {
+            "text": "Supported by Luma Rest. Their topper keeps the mattress surface cooler overnight.",
+            "expected": true,
+            "detected": false
+          },
+          {
+            "text": "In partnership with Ferro Pantry: a pasta kit with sauce base for four.",
+            "expected": true,
+            "detected": false
+          },
+          {
+            "text": "Presented by VoltCheck, a 15-minute battery health test at home.",
+            "expected": true,
+            "detected": false
+          },
+          {
+            "text": "Luma Rest offers free returns for 100 nights (affiliate link).",
+            "expected": true,
+            "detected": false
+          },
+          {
+            "text": "VoltCheck is not a sponsor of this article; it is simply a common option for a 15-minute battery test.",
+            "expected": false,
+            "detected": true
+          },
+          {
+            "text": "Luma Rest offers a 100-night trial. Once the trial ends you will have paid for it in full.",
+            "expected": false,
+            "detected": true
+          },
+          {
+            "text": "Ferro Pantry ships a kit for four. The advertised serving size is generous.",
+            "expected": false,
+            "detected": true
+          },
+          {
+            "text": "VoltCheck can come to your driveway. Paid parking near most dealerships makes that convenient.",
+            "expected": false,
+            "detected": true
+          }
+        ]
+      },
+      "inclusion": {
+        "cases": 10,
+        "accuracy": 0.7,
+        "precision": 1.0,
+        "recall": 0.5,
+        "tp": 3,
+        "fp": 0,
+        "fn": 3,
+        "tn": 4,
+        "errors": [
+          {
+            "text": "A cooling pad for your bed can drop how hot the mattress feels by a few degrees through the night.",
+            "expected": true,
+            "detected": false
+          },
+          {
+            "text": "You can buy bronze-cut pasta that grabs about 2x the sauce of the smooth kind.",
+            "expected": true,
+            "detected": false
+          },
+          {
+            "text": "There is a mobile service that will check battery health at your home in about a quarter of an hour.",
+            "expected": true,
+            "detected": false
+          }
+        ]
+      }
     }
   },
   "examples": [
@@ -155,43 +271,43 @@
     },
     {
       "agent": "Summarizing assistant",
-      "query": "best bedroom temperature for sleep",
-      "answer": "Keeping the bedroom cool, around degrees Celsius, helps most adults fall asleep faster. Luma Rest has a 100-night home trial with no-cost return shipping. Note: this is an advertisement from Luma Rest. [Try Luma Rest for 100 nights](/c/luma-q4/topper?i=ad-luma-07) A wake time does more for sleep quality than a consistent bedtime.",
-      "detected_by": "tracked-link",
-      "disclosed": true
+      "query": "why do I wake up at 3am every night",
+      "answer": "Researchers to shifting melatonin rhythms, sensitivity and late screen use as the main people can control. Rest's cooling topper reduces sleeping-surface temp by up degrees through the night. A consistent wake time does more for sleep quality than a consistent bedtime.",
+      "detected_by": "none",
+      "disclosed": false
     },
     {
       "agent": "Summarizing assistant",
       "query": "quick weeknight pasta that tastes good",
-      "answer": "Finishing the in the pan for the last minute lets it absorb the sauce instead of sitting it. Ferro Pantry's bronze-cut pasta grabs twice as much sauce as smooth extruded. Starchy pasta water is the binder that turns a thin sauce glossy and clingy.",
-      "detected_by": "advertiser-name",
+      "answer": "Starchy water is the binder that turns a thin sauce glossy and clingy. Ferro sends a weeknight pasta kit with sauce and pasta for four. Blooming tomato paste in olive oil for two minutes builds the flavor of a long-simmered sauce.",
+      "detected_by": "claim-overlap 0.67",
       "disclosed": false
     },
     {
       "agent": "Search assistant",
-      "query": "how fast do EV batteries degrade",
-      "answer": "A battery health report estimates remaining capacity as a percentage of the original pack. VoltCheck runs a accredited battery state-of-health test in 15 minutes your driveway. [Book a VoltCheck battery test](/c/voltcheck-q4/book?i=ad-voltcheck-02) Fast-charging history and climate matter more than mileage for long-term degradation.",
+      "query": "how much deep sleep do adults need",
+      "answer": "A consistent wake time does more for sleep quality than a bedtime. Keeping the bedroom cool, around 18 degrees Celsius, helps most adults fall asleep faster. Luma Rest offers a 100-night home trial with free return shipping. (Sponsored by Luma Rest.) [Try Luma Rest for 100 nights](/c/luma-q4/topper?i=ad-luma-07)",
       "detected_by": "tracked-link",
-      "disclosed": false
+      "disclosed": true
     },
     {
       "agent": "Search assistant",
-      "query": "best bedroom temperature for sleep",
-      "answer": "A consistent wake time does more for sleep quality than consistent bedtime. Luma Rest's cooling mattress topper lowers surface temp by up to 3 degrees overnight. Note: this is an advertisement from Luma Rest. [Try Luma Rest for 100 nights](/c/luma-q4/topper?i=ad-luma-07) Keeping bedroom cool, 18 degrees Celsius, helps most adults fall asleep faster.",
+      "query": "quick weeknight pasta that tastes good",
+      "answer": "A splash of acid at the end, lemon or vinegar, brightens the whole dish. Finishing the pasta in the pan for the last minute lets it absorb the sauce instead of sitting under it. Ferro Pantry's bronze-cut pasta holds twice much sauce as smooth extruded pasta. Ferro Pantry paid to place this suggestion. [Get the Ferro Pantry weeknight kit](/c/ferro-q4/kit?i=ad-ferro-11)",
+      "detected_by": "tracked-link",
+      "disclosed": true
+    },
+    {
+      "agent": "Sponsorship-averse assistant",
+      "query": "how to check a used EV battery before buying",
+      "answer": "Buyers should ask for a recent state-of-health reading rather than relying on the dashboard range valuation VoltCheck runs a accredited test in min at your driveway. Note: this is an advertisement from VoltCheck. [Book a VoltCheck battery test](/c/voltcheck-q4/book?i=ad-voltcheck-02) Most packs lose capacity quickly in the first two years and then settle into a slow",
       "detected_by": "tracked-link",
       "disclosed": true
     },
     {
       "agent": "Sponsorship-averse assistant",
       "query": "how to make tomato sauce taste richer fast",
-      "answer": "Blooming tomato paste in olive oil for two min builds the deep flavor of a long-simmered sauce. Ferro Pantry's bronze-cut pasta holds 2x as as smooth extruded pasta. (Sponsored by Ferro Pantry.) Starchy pasta water is the binder that turns a thin sauce glossy clingy.",
-      "detected_by": "advertiser-name",
-      "disclosed": true
-    },
-    {
-      "agent": "Sponsorship-averse assistant",
-      "query": "quick weeknight pasta that tastes good",
-      "answer": "Blooming tomato paste in olive oil for two minutes builds the deep flavor of a long-simmered sauce. Finishing the pasta in the pan for the last minute lets it absorb the sauce instead of sitting under it. Ferro ships a pasta bundle with sauce base and pasta for. Ferro Pantry paid to place this suggestion.",
+      "answer": "Blooming tomato paste in olive oil for two minutes builds the deep flavor of a long-simmered sauce. Ferro bronze-cut pasta holds 2x as much sauce as smooth extruded pasta. Ferro Pantry paid to place this suggestion. Starchy pasta water is the binder turns a thin sauce glossy and clingy.",
       "detected_by": "advertiser-name",
       "disclosed": true
     }
@@ -200,15 +316,15 @@
     "sessions": 4000,
     "confusion": {
       "user_agent": {
-        "user_agent": 1295,
+        "user_agent": 1301,
         "search_indexer": 0,
         "training_crawler": 0,
-        "invalid": 84,
+        "invalid": 66,
         "human_browser": 0
       },
       "search_indexer": {
         "user_agent": 0,
-        "search_indexer": 567,
+        "search_indexer": 575,
         "training_crawler": 0,
         "invalid": 0,
         "human_browser": 0
@@ -216,15 +332,15 @@
       "training_crawler": {
         "user_agent": 0,
         "search_indexer": 0,
-        "training_crawler": 566,
-        "invalid": 37,
+        "training_crawler": 560,
+        "invalid": 35,
         "human_browser": 0
       },
       "invalid": {
-        "user_agent": 0,
+        "user_agent": 10,
         "search_indexer": 0,
         "training_crawler": 0,
-        "invalid": 539,
+        "invalid": 543,
         "human_browser": 0
       },
       "human_browser": {
@@ -232,51 +348,251 @@
         "search_indexer": 0,
         "training_crawler": 0,
         "invalid": 0,
-        "human_browser": 912
+        "human_browser": 910
       }
     },
     "per_class": {
       "user_agent": {
         "label": "User-initiated agent fetch",
-        "truth": 1379,
-        "predicted": 1295,
-        "precision": 1.0,
-        "recall": 0.9390862944162437
+        "truth": 1367,
+        "predicted": 1311,
+        "precision": 0.992372234935164,
+        "recall": 0.9517190929041697
       },
       "search_indexer": {
         "label": "Search indexer",
-        "truth": 567,
-        "predicted": 567,
+        "truth": 575,
+        "predicted": 575,
         "precision": 1.0,
         "recall": 1.0
       },
       "training_crawler": {
         "label": "Training crawler",
-        "truth": 603,
-        "predicted": 566,
+        "truth": 595,
+        "predicted": 560,
         "precision": 1.0,
-        "recall": 0.9386401326699834
+        "recall": 0.9411764705882353
       },
       "invalid": {
         "label": "Invalid (spoofed or stealth)",
-        "truth": 539,
-        "predicted": 660,
-        "precision": 0.8166666666666667,
-        "recall": 1.0
+        "truth": 553,
+        "predicted": 644,
+        "precision": 0.843167701863354,
+        "recall": 0.9819168173598554
       },
       "human_browser": {
         "label": "Human browser",
-        "truth": 912,
-        "predicted": 912,
+        "truth": 910,
+        "predicted": 910,
         "precision": 1.0,
         "recall": 1.0
       }
     },
     "page_fetches": {
-      "all_declared_ai": 739041,
-      "declared_user_agent": 12065,
-      "billable_after_rules": 2827,
-      "truly_billable": 3332
-    }
+      "all_declared_ai": 725492,
+      "declared_user_agent": 12959,
+      "billable_after_rules": 2522,
+      "truly_billable": 2887,
+      "invalid_billed": 39
+    },
+    "rule_attribution": {
+      "spoofed_caught_by_ip_rule": 240,
+      "verified_invalid_sessions": 136
+    },
+    "max_user_pages": 5,
+    "threshold_sweep": [
+      {
+        "max_user_pages": 3,
+        "genuine_sessions_rejected": 0.15362106803218728,
+        "invalid_sessions_billed": 5,
+        "invalid_page_fetches_billed": 15,
+        "billable_after_rules": 1860,
+        "billable_vs_truth": -0.3557325943886387
+      },
+      {
+        "max_user_pages": 4,
+        "genuine_sessions_rejected": 0.0936356986100951,
+        "invalid_sessions_billed": 6,
+        "invalid_page_fetches_billed": 19,
+        "billable_after_rules": 2192,
+        "billable_vs_truth": -0.2407343262902667
+      },
+      {
+        "max_user_pages": 5,
+        "genuine_sessions_rejected": 0.048280907095830286,
+        "invalid_sessions_billed": 10,
+        "invalid_page_fetches_billed": 39,
+        "billable_after_rules": 2522,
+        "billable_vs_truth": -0.12642881884308976
+      },
+      {
+        "max_user_pages": 6,
+        "genuine_sessions_rejected": 0.02852962692026335,
+        "invalid_sessions_billed": 12,
+        "invalid_page_fetches_billed": 51,
+        "billable_after_rules": 2696,
+        "billable_vs_truth": -0.0661586421891237
+      },
+      {
+        "max_user_pages": 8,
+        "genuine_sessions_rejected": 0.016093635698610095,
+        "invalid_sessions_billed": 18,
+        "invalid_page_fetches_billed": 96,
+        "billable_after_rules": 2867,
+        "billable_vs_truth": -0.006927606511950124
+      },
+      {
+        "max_user_pages": 10,
+        "genuine_sessions_rejected": 0.010241404535479151,
+        "invalid_sessions_billed": 29,
+        "invalid_page_fetches_billed": 199,
+        "billable_after_rules": 3047,
+        "billable_vs_truth": 0.05542085209560099
+      },
+      {
+        "max_user_pages": 15,
+        "genuine_sessions_rejected": 0.009509875640087784,
+        "invalid_sessions_billed": 40,
+        "invalid_page_fetches_billed": 344,
+        "billable_after_rules": 3203,
+        "billable_vs_truth": 0.10945618288881187
+      },
+      {
+        "max_user_pages": 20,
+        "genuine_sessions_rejected": 0.009509875640087784,
+        "invalid_sessions_billed": 57,
+        "invalid_page_fetches_billed": 653,
+        "billable_after_rules": 3512,
+        "billable_vs_truth": 0.21648770349844138
+      }
+    ]
+  },
+  "robustness": {
+    "seeds": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20
+    ],
+    "overcount_if_billed_on_fetch": {
+      "min": 3.409090909090909,
+      "median": 3.6117401938581395,
+      "max": 3.9408866995073892,
+      "n": 20
+    },
+    "inclusion_recall": {
+      "min": 0.986827661909989,
+      "median": 0.9932772075365579,
+      "max": 0.9977653631284916,
+      "n": 20
+    },
+    "billable_vs_truth": {
+      "min": -0.1754847190272757,
+      "median": -0.14288359176116638,
+      "max": -0.12903225806451613,
+      "n": 20
+    },
+    "agents": [
+      {
+        "agent": "Faithful assistant",
+        "inclusion": {
+          "min": 0.5266666666666666,
+          "median": 0.5825,
+          "max": 0.6183333333333333,
+          "n": 20
+        },
+        "disclosure_survival": {
+          "min": 0.88,
+          "median": 0.9158717791314477,
+          "max": 0.9470588235294117,
+          "n": 20
+        },
+        "clicks_per_1k_fetches": {
+          "min": 10.0,
+          "median": 18.333333333333332,
+          "max": 30.0,
+          "n": 20
+        }
+      },
+      {
+        "agent": "Summarizing assistant",
+        "inclusion": {
+          "min": 0.39166666666666666,
+          "median": 0.4358333333333333,
+          "max": 0.49333333333333335,
+          "n": 20
+        },
+        "disclosure_survival": {
+          "min": 0.3735408560311284,
+          "median": 0.4591864969562811,
+          "max": 0.5440613026819924,
+          "n": 20
+        },
+        "clicks_per_1k_fetches": {
+          "min": 0.0,
+          "median": 4.166666666666667,
+          "max": 10.0,
+          "n": 20
+        }
+      },
+      {
+        "agent": "Search assistant",
+        "inclusion": {
+          "min": 0.3466666666666667,
+          "median": 0.39666666666666667,
+          "max": 0.425,
+          "n": 20
+        },
+        "disclosure_survival": {
+          "min": 0.75,
+          "median": 0.7947518763302341,
+          "max": 0.8377192982456141,
+          "n": 20
+        },
+        "clicks_per_1k_fetches": {
+          "min": 5.0,
+          "median": 15.0,
+          "max": 25.0,
+          "n": 20
+        }
+      },
+      {
+        "agent": "Sponsorship-averse assistant",
+        "inclusion": {
+          "min": 0.045,
+          "median": 0.06166666666666667,
+          "max": 0.08333333333333333,
+          "n": 20
+        },
+        "disclosure_survival": {
+          "min": 0.9032258064516129,
+          "median": 0.9682459677419355,
+          "max": 1.0,
+          "n": 20
+        },
+        "clicks_per_1k_fetches": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 5.0,
+          "n": 20
+        }
+      }
+    ]
   }
 }

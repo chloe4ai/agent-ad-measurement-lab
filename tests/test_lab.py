@@ -1,3 +1,4 @@
+import json
 import random
 
 from lab.agents import PROFILES, AgentProfile, answer
@@ -101,3 +102,20 @@ def test_ground_truth_does_not_depend_on_the_detector(monkeypatch):
     assert null["ground_truth"] == real["ground_truth"]
     assert null["funnel"]["clicks"] == real["funnel"]["clicks"]
     assert null["examples"] == [dict(e, detected_by="none", disclosed=False) for e in real["examples"]]
+
+
+def test_zero_answers_is_rejected_cleanly():
+    import pytest
+    import lab.run as run_mod
+    with pytest.raises(ValueError):
+        run_mod.run(0)
+    with pytest.raises(SystemExit):
+        run_mod.main_args(["--n", "0"])
+
+
+def test_run_with_no_delivered_ads_reports_undefined_overcount(tmp_path, capsys):
+    import lab.run as run_mod
+    out = tmp_path / "r.json"
+    run_mod.main_args(["--n", "1", "--seed", "3", "--out", str(out)])
+    assert "undefined" in capsys.readouterr().out
+    assert json.loads(out.read_text())["funnel"]["overcount_if_billed_on_fetch"] is None

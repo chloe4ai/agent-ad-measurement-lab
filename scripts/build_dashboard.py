@@ -125,7 +125,7 @@ function bindTips(root){ root.querySelectorAll("[data-tip]").forEach(el => {
 // Tiles
 const f = R.funnel, v = R.detector_validation, pf = R.traffic.page_fetches;
 document.getElementById("tiles").innerHTML = [
-  [f.overcount_if_billed_on_fetch.toFixed(1) + "×", "overcount if impressions are billed on fetch instead of delivered, labeled answers"],
+  [f.overcount_if_billed_on_fetch == null ? "n/a" : f.overcount_if_billed_on_fetch.toFixed(1) + "×", "overcount if impressions are billed on fetch instead of delivered, labeled answers"],
   [pct(v.inclusion.precision) + " / " + pct(v.inclusion.recall), "inclusion detector precision / recall against simulated ground truth"],
   [pct(pf.billable_after_rules / pf.declared_user_agent), "of page fetches declaring a user-agent token pass the billing rules"],
 ].map(([val, k]) => `<div class="tile"><div class="v">${val}</div><div class="k">${k}</div></div>`).join("");

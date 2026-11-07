@@ -20,7 +20,16 @@ OUT = Path(__file__).resolve().parent.parent / "docs" / "results.json"
 BASE_CTR = 0.04  # chance a person clicks a surviving tracked link
 
 
+def _positive_int(value: str) -> int:
+    n = int(value)
+    if n < 1:
+        raise argparse.ArgumentTypeError("must be at least 1")
+    return n
+
+
 def run(n_per_agent: int = 600, seed: int = 42) -> dict:
+    if n_per_agent < 1:
+        raise ValueError("n_per_agent must be at least 1")
     # Two independent streams: one simulates the agents (ground truth), one
     # simulates people clicking. Nothing the detector returns touches either,
     # so swapping the detector can never change what actually happened.
@@ -113,12 +122,12 @@ def run(n_per_agent: int = 600, seed: int = 42) -> dict:
     }
 
 
-def main() -> None:
+def main_args(argv: list[str] | None = None) -> None:
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--n", type=int, default=600, help="answers simulated per agent")
+    ap.add_argument("--n", type=_positive_int, default=600, help="answers simulated per agent")
     ap.add_argument("--seed", type=int, default=42)
     ap.add_argument("--out", type=Path, default=OUT)
-    args = ap.parse_args()
+    args = ap.parse_args(argv)
     res = run(args.n, args.seed)
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(json.dumps(res, indent=2))
@@ -126,14 +135,23 @@ def main() -> None:
     f = res["funnel"]
     print(f"Fetched {f['fetched']}  ->  included {f['included']}  ->  "
           f"included+disclosed {f['included_and_disclosed']}  ->  clicks {f['clicks']}")
-    print(f"Billing on fetches would overcount delivered, labeled ads by "
-          f"{f['overcount_if_billed_on_fetch']:.1f}x")
+    over = f["overcount_if_billed_on_fetch"]
+    if over is None:
+        print("No answer in this run both included the ad and kept its label, "
+              "so the fetch overcount is undefined. Try a larger --n.")
+    else:
+        print(f"Billing on fetches would overcount delivered, labeled ads by {over:.1f}x "
+              f"(fetches / detected included-and-labeled answers)")
     for k, v in res["detector_validation"].items():
         print(f"{k.capitalize()} detector vs ground truth: precision {v['precision']:.3f}, recall {v['recall']:.3f}")
     pf = res["traffic"]["page_fetches"]
     print(f"Traffic: {pf['declared_user_agent']} page fetches declare a user-agent token; "
           f"{pf['billable_after_rules']} billable after rules (truth {pf['truly_billable']})")
     print(f"Wrote {args.out}")
+
+
+def main() -> None:
+    main_args()
 
 
 if __name__ == "__main__":

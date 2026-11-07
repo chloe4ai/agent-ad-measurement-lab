@@ -1,7 +1,7 @@
 import random
 
 from lab.agents import PROFILES, AgentProfile, answer
-from lab.detect import claim_overlap, detect
+from lab.detect import Detection, claim_overlap, detect
 from lab.page import load_pages, render_agent_markdown
 from lab.stats import wilson
 from lab.traffic import Session, classify, generate, _ua
@@ -91,3 +91,13 @@ def test_stealth_scraper_with_browser_ua_is_invalid():
 
 def test_generated_log_is_reproducible():
     assert generate(200, seed=3) == generate(200, seed=3)
+
+
+def test_ground_truth_does_not_depend_on_the_detector(monkeypatch):
+    import lab.run as run_mod
+    real = run_mod.run(200, seed=5)
+    monkeypatch.setattr(run_mod, "detect", lambda text, ad: Detection(False, False, False, "none"))
+    null = run_mod.run(200, seed=5)
+    assert null["ground_truth"] == real["ground_truth"]
+    assert null["funnel"]["clicks"] == real["funnel"]["clicks"]
+    assert null["examples"] == [dict(e, detected_by="none", disclosed=False) for e in real["examples"]]

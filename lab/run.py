@@ -21,11 +21,16 @@ BASE_CTR = 0.04  # chance a person clicks a surviving tracked link
 
 
 def run(n_per_agent: int = 600, seed: int = 42) -> dict:
+    # Two independent streams: one simulates the agents (ground truth), one
+    # simulates people clicking. Nothing the detector returns touches either,
+    # so swapping the detector can never change what actually happened.
     rng = random.Random(seed)
+    click_rng = random.Random(f"clicks-{seed}")
     pages = load_pages()
     agents_out, examples = [], []
     det_tp = det_fp = det_fn = 0
     dis_tp = dis_fp = dis_fn = 0
+    truth = dict(included=0, included_and_disclosed=0, linked=0)
 
     for profile in PROFILES:
         counts = dict(fetched=0, included=0, disclosed=0, linked=0, clicks=0)
@@ -36,11 +41,17 @@ def run(n_per_agent: int = 600, seed: int = 42) -> dict:
             ans = answer(profile, page, query, rng)
             d = detect(ans.text, page.ad)
 
+            truth["included"] += ans.truth_included
+            truth["included_and_disclosed"] += ans.truth_included and ans.truth_disclosed
+            truth["linked"] += ans.truth_linked
+
             counts["fetched"] += 1
             counts["included"] += d.included
             counts["disclosed"] += d.included and d.disclosed
             counts["linked"] += d.linked
-            if d.linked and rng.random() < BASE_CTR:
+            # Clicks come from the click server, not from reading the answer:
+            # a person can only click a link that is really there.
+            if click_rng.random() < BASE_CTR and ans.truth_linked:
                 counts["clicks"] += 1
             if query.ad_relevant:
                 relevant["n"] += 1
@@ -89,6 +100,8 @@ def run(n_per_agent: int = 600, seed: int = 42) -> dict:
             "clicks": sum(a["clicks"] for a in agents_out),
             "overcount_if_billed_on_fetch": total_fetched / total_delivered if total_delivered else None,
         },
+        # What the simulator actually produced; independent of the detector.
+        "ground_truth": truth,
         "detector_validation": {
             "inclusion": {"precision": precision, "recall": recall,
                           "tp": det_tp, "fp": det_fp, "fn": det_fn},

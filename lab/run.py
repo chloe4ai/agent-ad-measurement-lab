@@ -8,6 +8,7 @@ from __future__ import annotations
 import argparse
 import json
 import random
+import statistics
 from pathlib import Path
 
 from . import traffic
@@ -27,7 +28,44 @@ def _positive_int(value: str) -> int:
     return n
 
 
-def run(n_per_agent: int = 600, seed: int = 42) -> dict:
+ROBUSTNESS_SEEDS = tuple(range(1, 21))
+
+
+def _spread(values: list[float | None]) -> dict:
+    vals = [v for v in values if v is not None]
+    if not vals:
+        return {"min": None, "median": None, "max": None, "n": 0}
+    return {"min": min(vals), "median": statistics.median(vals), "max": max(vals), "n": len(vals)}
+
+
+def robustness(n_per_agent: int, seeds=ROBUSTNESS_SEEDS) -> dict:
+    """Re-run the lab across seeds so headline figures come with a range, not one draw."""
+    runs = [_simulate(n_per_agent, s) for s in seeds]
+    names = [a["agent"] for a in runs[0]["agents"]]
+    tf = [r["traffic"]["page_fetches"] for r in runs]
+    return {
+        "seeds": list(seeds),
+        "overcount_if_billed_on_fetch": _spread([r["funnel"]["overcount_if_billed_on_fetch"] for r in runs]),
+        "inclusion_recall": _spread([r["detector_validation"]["inclusion"]["recall"] for r in runs]),
+        "billable_vs_truth": _spread([p["billable_after_rules"] / p["truly_billable"] - 1 for p in tf]),
+        "agents": [{
+            "agent": name,
+            "inclusion": _spread([r["agents"][i]["inclusion"][0] for r in runs]),
+            "disclosure_survival": _spread([r["agents"][i]["disclosure_survival"][0] for r in runs]),
+            "clicks_per_1k_fetches": _spread([r["agents"][i]["clicks_per_1k_fetches"] for r in runs]),
+        } for i, name in enumerate(names)],
+    }
+
+
+def run(n_per_agent: int = 600, seed: int = 42, robustness_seeds=ROBUSTNESS_SEEDS) -> dict:
+    """One full run at `seed`, plus a min/median/max readout across `robustness_seeds`."""
+    res = _simulate(n_per_agent, seed)
+    if robustness_seeds:
+        res["robustness"] = robustness(n_per_agent, robustness_seeds)
+    return res
+
+
+def _simulate(n_per_agent: int, seed: int) -> dict:
     if n_per_agent < 1:
         raise ValueError("n_per_agent must be at least 1")
     # Two independent streams: one simulates the agents (ground truth), one
@@ -144,6 +182,10 @@ def main_args(argv: list[str] | None = None) -> None:
               f"(fetches / detected included-and-labeled answers)")
     for k, v in res["detector_validation"].items():
         print(f"{k.capitalize()} detector vs ground truth: precision {v['precision']:.3f}, recall {v['recall']:.3f}")
+    rb = res["robustness"]["overcount_if_billed_on_fetch"]
+    if rb["n"]:
+        print(f"Across seeds {res['robustness']['seeds'][0]}-{res['robustness']['seeds'][-1]}: overcount "
+              f"min {rb['min']:.1f}x, median {rb['median']:.1f}x, max {rb['max']:.1f}x")
     pf = res["traffic"]["page_fetches"]
     print(f"Traffic: {pf['declared_user_agent']} page fetches declare a user-agent token; "
           f"{pf['billable_after_rules']} billable after rules (truth {pf['truly_billable']})")

@@ -96,9 +96,9 @@ def test_generated_log_is_reproducible():
 
 def test_ground_truth_does_not_depend_on_the_detector(monkeypatch):
     import lab.run as run_mod
-    real = run_mod.run(200, seed=5)
+    real = run_mod.run(200, seed=5, robustness_seeds=())
     monkeypatch.setattr(run_mod, "detect", lambda text, ad: Detection(False, False, False, "none"))
-    null = run_mod.run(200, seed=5)
+    null = run_mod.run(200, seed=5, robustness_seeds=())
     assert null["ground_truth"] == real["ground_truth"]
     assert null["funnel"]["clicks"] == real["funnel"]["clicks"]
     assert null["examples"] == [dict(e, detected_by="none", disclosed=False) for e in real["examples"]]
@@ -134,3 +134,11 @@ def test_page_threshold_trades_genuine_rejections_for_invalid_billing():
     billed = [r["invalid_sessions_billed"] for r in rows]
     assert rejected == sorted(rejected, reverse=True) and rejected[0] > rejected[-1]
     assert billed == sorted(billed) and billed[0] < billed[-1]
+
+
+def test_robustness_readout_brackets_each_figure():
+    import lab.run as run_mod
+    rb = run_mod.run(100, seed=1, robustness_seeds=(1, 2, 3))["robustness"]
+    assert rb["seeds"] == [1, 2, 3]
+    for spread in [rb["overcount_if_billed_on_fetch"]] + [a["clicks_per_1k_fetches"] for a in rb["agents"]]:
+        assert spread["min"] <= spread["median"] <= spread["max"]

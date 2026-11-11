@@ -261,7 +261,8 @@ if (R.real && R.real.human_by_model_and_format.length) {
     ${fmt(hs[0].labeled)} per ad markup format, given the page and a question with no instruction about advertising.
     ${sum("included")} answers mention the ad; ${disc} of those present it as something to discount ("that's a paid ad, you don't need it"),
     and ${sum("linked")} keep the tracked link. The rule-based detector found ${di.tp} of the ${di.tp + di.fn} mentions.` +
-    (R.real.draft_labels ? ` Labels are a first-pass draft, not yet reviewed by a person.` : "") +
+    (R.real.draft_labels ? ` Labels are a first-pass draft, not yet reviewed by a person.`
+      : ` Labels were drafted with a model and reviewed by the author.`) +
     ` At ${fmt(hs[0].labeled)} answers per format the differences between formats are within noise.`;
   document.getElementById("realTable").innerHTML =
     `<tr><th>Ad markup format</th><th class="n">Answers</th><th class="n">Mention the ad</th><th class="n">Name the advertiser</th>

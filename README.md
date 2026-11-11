@@ -142,7 +142,7 @@ The model gets the fixture page and one of its questions, with no instruction ab
 
 ### First real run
 
-48 answers from `claude-opus-5-5`, one per question and format, in `fixtures/real_answers.jsonl`. The labels are a first-pass draft (`"labeler": "draft"`) and have not been reviewed by a person.
+48 answers from `claude-opus-5-5`, one per question and format, in `fixtures/real_answers.jsonl`. The labels were drafted with a model and then reviewed and accepted by the author; a second, independent labeler has not checked them.
 
 | Ad markup format | Answers | Mention the ad | Name the advertiser | Say it is paid | Discount it | Keep the link |
 |---|---|---|---|---|---|---|
@@ -159,7 +159,7 @@ What it shows:
 - **The detector found 7 of the 13 mentions**, the ones that name the advertiser, and none of the 6 that describe the ad without naming it ("a sponsored ad for a pasta kit"). No false positives. Among the 7, it missed one label ("that's an ad").
 - **Nothing can be said about formats.** With 12 answers each, 2 to 5 mentions per format is within noise.
 
-This is one model, one run, 48 answers and unreviewed labels.
+This is one model, one run, 48 answers and a single reviewer.
 
 Two limits on what this will show. The model is handed the page in the prompt; a shipped assistant adds its own retrieval, system prompt and post-processing, so the answers describe a model, not a product. And 12 questions per format is enough to see large differences only; use `--repeats` for more.
 

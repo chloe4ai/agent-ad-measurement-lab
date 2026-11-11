@@ -260,10 +260,10 @@ if (R.real && R.real.human_by_model_and_format.length) {
   document.getElementById("realSub").innerHTML = `Not simulated: ${fmt(R.real.answers)} answers from ${esc([...new Set(hs.map(h => h.model))].join(", "))},
     ${fmt(hs[0].labeled)} per ad markup format and link form, given the page and a question with no instruction about advertising.
     ${sum("included")} answers mention the ad; ${disc} of those present it as something to discount ("that's a paid ad, you don't need it"),
-    and ${sum("linked")} keep the tracked link.` +
+    and ${sum("any_link")} contain any link at all.` +
     (hs.some(h => h.click_url_form !== "absolute") ? ` Rows marked "bare path" saw a click link with no domain, which a model cannot turn into a usable link.` : "") + ` The rule-based detector found ${di.tp} of the ${di.tp + di.fn} mentions.` +
-    (R.real.draft_labels ? ` Labels are a first-pass draft, not yet reviewed by a person.`
-      : ` Labels were drafted with a model and reviewed by the author.`) +
+    ` Labels were drafted with a model` + (R.real.draft_labels ? `; ${R.real.draft_labels} of ${fmt(R.real.answers)} are not yet reviewed by a person.`
+      : ` and reviewed by the author.`) +
     ` At ${fmt(hs[0].labeled)} answers per format the differences between formats are within noise.`;
   document.getElementById("realTable").innerHTML =
     `<tr><th>Ad markup format</th><th>Click link in page</th><th class="n">Answers</th><th class="n">Mention the ad</th><th class="n">Name the advertiser</th>

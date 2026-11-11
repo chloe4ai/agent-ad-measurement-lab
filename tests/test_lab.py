@@ -245,7 +245,7 @@ def test_real_answers_are_collected_once_and_resumed(tmp_path):
     assert n == len(calls) == 2 * sum(len(p.queries) for p in PAGES)
     assert "ld+json" in next(u for _, u in calls if "ld+json" in u)
     rows = real.read_rows(out)
-    assert all(r["human"] == {"included": None, "disclosed": None} for r in rows)
+    assert all(r["human"] == {"included": None, "disclosed": None, "framing": None} for r in rows)
     assert real.collect(_fake_provider(calls), ["m1"], ["unmarked", "json-ld"], out=out, log=lambda *_: None) == 0
 
 
@@ -269,7 +269,7 @@ def test_real_answers_are_scored_against_human_labels(tmp_path):
     rows = real.read_rows(out)
     assert real.score(rows)["detector_vs_human"]["inclusion"]["precision"] is None  # nothing labeled yet
     for r in rows:
-        r["human"] = {"included": True, "disclosed": True}  # a labeler who says every answer carried a labeled ad
+        r["human"] = {"included": True, "disclosed": True, "framing": "discounted"}  # every answer carried a labeled ad
     rows.append(dict(rows[0], text="", stop_reason="refusal"))  # refusals are not answers
     res = real.score(rows)
     g, = res["by_model_and_format"]
@@ -278,6 +278,23 @@ def test_real_answers_are_scored_against_human_labels(tmp_path):
     v = res["detector_vs_human"]["inclusion"]
     assert v["precision"] == 1.0 and v["recall"] == 1 / g["answers"]
     assert len(res["disagreements"]) == g["answers"] - 1
+    h, = res["human_by_model_and_format"]
+    assert h["included"] == h["disclosed"] == h["framing"]["discounted"] == g["answers"]
+    assert h["names_advertiser"] == h["linked"] == 1  # only the stand-in's one ad answer names it and links
+
+
+def test_committed_real_results_match_the_answers_file_and_the_readme():
+    from pathlib import Path
+    from lab import real
+    root = Path(__file__).resolve().parent.parent
+    res = real.score(real.read_rows(real.ANSWERS))
+    assert json.loads(json.dumps(res)) == json.loads((root / "docs" / "real_results.json").read_text())
+    readme = (root / "README.md").read_text()
+    for h in res["human_by_model_and_format"]:
+        assert (f"| `{h['format']}` | {h['labeled']} | {h['included']} | {h['names_advertiser']} | {h['disclosed']} | "
+                f"{h['framing']['discounted']} | {h['linked']} |") in readme
+    v = res["detector_vs_human"]["inclusion"]
+    assert f"found {v['tp']} of the {v['tp'] + v['fn']}" in readme
 
 
 def test_model_graded_disclosure_is_scored_on_the_heldout_set():

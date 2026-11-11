@@ -19,8 +19,8 @@ jobs:
       - run: pip install pytest && python -m pytest -q
       - name: Regenerate results and check they match the committed files
         run: |
-          python -m lab.run && python scripts/build_dashboard.py
-          git diff --exit-code -- docs/results.json docs/index.html || {
+          python -m lab.run && python -m lab.real score --out docs/real_results.json && python scripts/build_dashboard.py
+          git diff --exit-code -- docs/results.json docs/real_results.json docs/index.html || {
             echo "::error::docs/results.json or docs/index.html is out of date. Run python -m lab.run && python scripts/build_dashboard.py and commit the result."
             exit 1
           }

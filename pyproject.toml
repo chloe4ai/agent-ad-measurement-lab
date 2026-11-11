@@ -1,0 +1,17 @@
+[project]
+name = "agent-ad-measurement-lab"
+version = "0.2.0"
+description = "Measures what an AI agent delivers of a sponsored block: inclusion, disclosure, link survival, traffic quality."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest"]
+real = ["anthropic"]
+
+[tool.setuptools]
+packages = ["lab"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

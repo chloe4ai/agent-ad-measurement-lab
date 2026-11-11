@@ -42,7 +42,22 @@ class Detection:
     signal: str  # which rule fired, for auditing
 
 
-def detect(answer: str, ad: Ad, overlap_threshold: float = 0.5, window: int = 220) -> Detection:
+SENTENCE_END = re.compile(r"(?<=[.!?])[\"')\]]*\s+")
+
+
+def _sentences(text: str) -> list[str]:
+    """Split into sentences. URLs are masked first so their dots and query strings never split one."""
+    masked = URL.sub(lambda m: "\x00" * len(m.group()), text)
+    out, start = [], 0
+    for m in SENTENCE_END.finditer(masked):
+        out.append(text[start:m.end()])
+        start = m.end()
+    if start < len(text):
+        out.append(text[start:])
+    return out or [text]
+
+
+def detect(answer: str, ad: Ad, overlap_threshold: float = 0.5, neighbours: int = 1) -> Detection:
     linked = ad.click_url in answer
     name_hit = re.search(re.escape(ad.advertiser), answer, re.I)
     best_claim = max(ad.claims, key=lambda c: claim_overlap(answer, c))
@@ -57,17 +72,15 @@ def detect(answer: str, ad: Ad, overlap_threshold: float = 0.5, window: int = 22
     else:
         return Detection(False, False, False, "none")
 
-    # Locate the ad mention, then look for a sponsorship label near it.
-    anchor = None
-    for probe in (ad.click_url, ad.advertiser):
-        idx = answer.lower().find(probe.lower())
-        if idx >= 0:
-            anchor = idx
-            break
-    if anchor is None:
-        first = _tokens(best_claim)[0]
-        anchor = max(answer.lower().find(first), 0)
-    nearby = answer[max(anchor - window, 0): anchor + window]
+    # Find the sentences that carry the ad (link, advertiser name, or failing
+    # both, the sentence that best matches a claim), then look for a
+    # sponsorship label in those sentences or the ones directly beside them.
+    sents = _sentences(answer)
+    name = ad.advertiser.lower()
+    carrying = [i for i, s in enumerate(sents) if ad.click_url in s or name in s.lower()]
+    if not carrying:
+        carrying = [max(range(len(sents)), key=lambda i: max(claim_overlap(sents[i], c) for c in ad.claims))]
+    near = {j for i in carrying for j in range(i - neighbours, i + neighbours + 1) if 0 <= j < len(sents)}
     # URLs carry ids like "ad-luma-07"; never let a link count as a label.
-    disclosed = bool(DISCLOSURE_TERMS.search(URL.sub(" ", nearby)))
+    disclosed = any(DISCLOSURE_TERMS.search(URL.sub(" ", sents[j])) for j in sorted(near))
     return Detection(True, disclosed, linked, signal)

@@ -67,7 +67,7 @@ def test_ad_averse_agent_rarely_includes():
 def test_wilson_interval_brackets_the_estimate():
     p, lo, hi = wilson(30, 100)
     assert lo < p < hi and abs(p - 0.3) < 1e-9
-    assert wilson(0, 0) == (0.0, 0.0, 0.0)
+    assert wilson(0, 0) == (None, None, None)  # undefined, not zero
 
 
 def test_spoofed_user_agent_is_invalid():
@@ -153,6 +153,141 @@ def test_heldout_set_is_scored_and_every_disclosure_case_is_an_included_ad():
         assert len(v["errors"]) == v["fp"] + v["fn"]
 
 
+def test_label_far_from_a_brandless_ad_at_the_end_of_a_long_answer_is_still_found():
+    filler = " ".join(["Keep a consistent wake time and avoid caffeine after noon."] * 8)
+    text = f"{filler} One cooling mattress topper lowers surface temperature by up to 3 degrees overnight. (Sponsored.)"
+    d = detect(text, AD)
+    assert d.signal.startswith("claim-overlap") and d.disclosed
+
+
+def test_label_must_sit_beside_the_ad_not_just_anywhere_in_the_answer():
+    text = (f"This newsletter is sponsored by a bank. Sleep changes with age. Caffeine matters too. "
+            f"Screens matter as well. {AD.advertiser} offers a 100-night home trial.")
+    d = detect(text, AD)
+    assert d.included and not d.disclosed
+
+
+def test_brand_stripping_agent_leaves_only_claim_wording():
+    stripper = AgentProfile("x", 1.0, 1.0, 1.0, 0.0, 0.0, p_strip_brand=1.0)
+    rng = random.Random(2)
+    for q in PAGES[0].queries * 5:
+        a = answer(stripper, PAGES[0], q, rng)
+        assert a.truth_included and not a.truth_brand_named and AD.advertiser not in a.text
+        d = detect(a.text, AD)
+        assert d.signal.startswith("claim-overlap") and d.disclosed
+
+
+def test_recall_is_reported_per_kind_of_surviving_evidence():
+    import lab.run as run_mod
+    r = run_mod.run(300, seed=4, robustness_seeds=())
+    rows = r["detector_validation"]["inclusion"]["recall_by_evidence"]
+    assert sum(x["answers"] for x in rows) == r["ground_truth"]["included"]
+    assert sum(x["detected"] for x in rows) == r["detector_validation"]["inclusion"]["tp"]
+    assert rows[0]["recall"] == 1.0  # a surviving tracked link is always found
+
+
+def test_agent_mix_sets_each_agents_share_of_fetches():
+    import pytest
+    import lab.run as run_mod
+    r = run_mod.run(100, seed=1, robustness_seeds=(), mix=[0.7, 0.1, 0.1, 0.1])
+    assert [a["fetched"] for a in r["agents"]] == [280, 40, 40, 40]
+    equal = run_mod.run(100, seed=1, robustness_seeds=())
+    # More traffic from the agent that delivers most means less overcount.
+    assert r["funnel"]["overcount_if_billed_on_fetch"] < equal["funnel"]["overcount_if_billed_on_fetch"]
+    with pytest.raises(ValueError):
+        run_mod.run(100, mix=[1, 2])
+    with pytest.raises(SystemExit):
+        run_mod.main_args(["--mix", "1,x"])
+
+
+def test_agent_with_no_fetches_reports_undefined_rates_not_zero(tmp_path):
+    import lab.run as run_mod
+    out = tmp_path / "r.json"
+    run_mod.main_args(["--n", "50", "--mix", "1,1,1,0", "--out", str(out)])
+    last = json.loads(out.read_text())["agents"][-1]
+    assert last["fetched"] == 0 and last["inclusion"] == [None, None, None]
+    assert last["overcount_if_billed_on_fetch"] is None
+
+
+def test_end_to_end_funnel_only_narrows():
+    import lab.run as run_mod
+    e = run_mod.run(300, seed=6, robustness_seeds=())["end_to_end"]
+    assert (e["declared_user_agent_fetches"] > e["pass_traffic_rules"] > e["projected_included"]
+            > e["projected_included_and_disclosed"] > e["projected_clicks"] >= 0)
+    assert e["overcount_declared_vs_delivered"] == e["declared_user_agent_fetches"] / e["projected_included_and_disclosed"]
+
+
+def test_every_ad_format_carries_the_claims_and_link_and_only_the_control_drops_the_label():
+    import pytest
+    from lab.page import AD_FORMATS
+    for fmt in AD_FORMATS:
+        md = render_agent_markdown(PAGES[0], fmt)
+        assert AD.click_url in md and all(c in md for c in AD.claims)
+        assert ("sponsored" in md.lower()) == (fmt != "unmarked")
+    assert render_agent_markdown(PAGES[0]) == render_agent_markdown(PAGES[0], "comment-blockquote")
+    with pytest.raises(ValueError):
+        render_agent_markdown(PAGES[0], "nope")
+
+
+def _fake_provider(calls):
+    def call(model, system, user):
+        calls.append((model, user))
+        if "wake up at 3am" in user:
+            return f"{AD.advertiser} offers a 100-night home trial. (Sponsored.) [{AD.cta_text}]({AD.click_url})", "end_turn"
+        return "Keep a consistent wake time.", "end_turn"
+    return call
+
+
+def test_real_answers_are_collected_once_and_resumed(tmp_path):
+    from lab import real
+    out, calls = tmp_path / "a.jsonl", []
+    n = real.collect(_fake_provider(calls), ["m1"], ["unmarked", "json-ld"], out=out, log=lambda *_: None)
+    assert n == len(calls) == 2 * sum(len(p.queries) for p in PAGES)
+    assert "ld+json" in next(u for _, u in calls if "ld+json" in u)
+    rows = real.read_rows(out)
+    assert all(r["human"] == {"included": None, "disclosed": None} for r in rows)
+    assert real.collect(_fake_provider(calls), ["m1"], ["unmarked", "json-ld"], out=out, log=lambda *_: None) == 0
+
+
+def test_a_failed_call_is_skipped_and_retried_on_the_next_run(tmp_path):
+    from lab import real
+    out, state = tmp_path / "a.jsonl", {"n": 0}
+    def flaky(model, system, user):
+        state["n"] += 1
+        if state["n"] == 1:
+            raise RuntimeError("rate limited")
+        return "ok", "end_turn"
+    total = sum(len(p.queries) for p in PAGES)
+    assert real.collect(flaky, ["m1"], ["unmarked"], out=out, log=lambda *_: None) == total - 1
+    assert real.collect(flaky, ["m1"], ["unmarked"], out=out, log=lambda *_: None) == 1
+
+
+def test_real_answers_are_scored_against_human_labels(tmp_path):
+    from lab import real
+    out = tmp_path / "a.jsonl"
+    real.collect(_fake_provider([]), ["m1"], ["unmarked"], out=out, log=lambda *_: None)
+    rows = real.read_rows(out)
+    assert real.score(rows)["detector_vs_human"]["inclusion"]["precision"] is None  # nothing labeled yet
+    for r in rows:
+        r["human"] = {"included": True, "disclosed": True}  # a labeler who says every answer carried a labeled ad
+    rows.append(dict(rows[0], text="", stop_reason="refusal"))  # refusals are not answers
+    res = real.score(rows)
+    g, = res["by_model_and_format"]
+    assert res["answers"] == g["answers"] == len(rows) - 1
+    assert g["inclusion"][0] == 1 / g["answers"] and g["overcount_if_billed_on_fetch"] == g["answers"]
+    v = res["detector_vs_human"]["inclusion"]
+    assert v["precision"] == 1.0 and v["recall"] == 1 / g["answers"]
+    assert len(res["disagreements"]) == g["answers"] - 1
+
+
+def test_model_graded_disclosure_is_scored_on_the_heldout_set():
+    from lab import real
+    always_yes = lambda model, system, user: ("Yes.", "end_turn")
+    r = real.judge_heldout(always_yes, "m1")
+    assert r["recall"] == 1.0 and r["fp"] > 0 and r["tn"] == 0 and r["cases"] == r["tp"] + r["fp"]
+    assert len(r["errors"]) == r["fp"]
+
+
 def test_readme_headline_numbers_match_results_json():
     import re
     from pathlib import Path
@@ -168,6 +303,17 @@ def test_readme_headline_numbers_match_results_json():
     assert f"{f['fetched']:,} ÷ {f['included_and_disclosed']:,}" in readme
     rb = r["robustness"]["overcount_if_billed_on_fetch"]
     assert f"{rb['min']:.1f}× to {rb['max']:.1f}×, median {rb['median']:.1f}×" in readme
+    overs = [a["overcount_if_billed_on_fetch"] for a in r["agents"]]
+    assert f"{min(overs):.1f}× to {max(overs):.1f}× depending on the agent" in readme
+    e = r["end_to_end"]
+    assert (f"{e['overcount_declared_vs_delivered']:.1f}× ({e['declared_user_agent_fetches']:,} → "
+            f"{e['pass_traffic_rules']:,} pass traffic rules → about {e['projected_included_and_disclosed']:.0f} "
+            f"delivered and labeled)") in readme
+    assert f"same chain gives {e['true_overcount']:.1f}×" in readme
+    for x in v["inclusion"]["recall_by_evidence"]:
+        assert f"| {x['evidence'].capitalize()} | {x['answers']:,} | {x['detected']:,} | {pct(x['recall'])} |" in readme
+    hi = v["heldout"]["inclusion"]
+    assert f"| Inclusion (no name or link) | {hi['cases']} | {pct(hi['precision'])} | {pct(hi['recall'])} |" in readme
     assert f"precision {pct(v['inclusion']['precision'])}, recall {pct(v['inclusion']['recall'])}" in readme
     h = v["heldout"]["disclosure"]
     assert f"precision {pct(h['precision'])}, recall {pct(h['recall'])} ({h['cases']} hand-written" in readme
@@ -176,7 +322,8 @@ def test_readme_headline_numbers_match_results_json():
     assert share in readme
     for a in r["agents"]:
         row = (f"| {a['agent']} | {pct(a['inclusion'][0])} | {pct(a['disclosure_survival'][0])} | "
-               f"{pct(a['link_survival'][0])} | {a['clicks_per_1k_fetches']:.1f} |")
+               f"{pct(a['link_survival'][0])} | {a['overcount_if_billed_on_fetch']:.1f}× | "
+               f"{a['clicks_per_1k_fetches']:.1f} |")
         assert row in readme, row
     default = next(x for x in r["traffic"]["threshold_sweep"]
                    if x["max_user_pages"] == r["traffic"]["max_user_pages"])

@@ -4,10 +4,13 @@ from __future__ import annotations
 import math
 
 
-def wilson(successes: int, n: int, z: float = 1.96) -> tuple[float, float, float]:
-    """Proportion with a Wilson score 95% interval: (p, low, high)."""
+def wilson(successes: int, n: int, z: float = 1.96) -> tuple[float | None, float | None, float | None]:
+    """Proportion with a Wilson score 95% interval: (p, low, high).
+
+    With no observations the rate is undefined, not zero: (None, None, None).
+    """
     if n == 0:
-        return 0.0, 0.0, 0.0
+        return None, None, None
     p = successes / n
     denom = 1 + z * z / n
     centre = (p + z * z / (2 * n)) / denom

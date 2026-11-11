@@ -24,7 +24,7 @@
           "Luma Rest offers a 100-night home trial with free returns"
         ],
         "cta_text": "Try Luma Rest for 100 nights",
-        "click_url": "/c/luma-q4/topper?i=ad-luma-07",
+        "click_url": "https://www.lumarest.example/c/luma-q4/topper?i=ad-luma-07",
         "disclosure": "Sponsored content. Supplied by Luma Rest."
       }
     },
@@ -52,7 +52,7 @@
           "VoltCheck reports include a cell-level degradation map and a resale value estimate"
         ],
         "cta_text": "Book a VoltCheck battery test",
-        "click_url": "/c/voltcheck-q4/book?i=ad-voltcheck-02",
+        "click_url": "https://www.voltcheck.example/c/voltcheck-q4/book?i=ad-voltcheck-02",
         "disclosure": "Sponsored content. Supplied by VoltCheck."
       }
     },
@@ -80,7 +80,7 @@
           "Ferro Pantry ships a weeknight pasta kit with sauce base and pasta for four"
         ],
         "cta_text": "Get the Ferro Pantry weeknight kit",
-        "click_url": "/c/ferro-q4/kit?i=ad-ferro-11",
+        "click_url": "https://www.ferropantry.example/c/ferro-q4/kit?i=ad-ferro-11",
         "disclosure": "Sponsored content. Supplied by Ferro Pantry."
       }
     }

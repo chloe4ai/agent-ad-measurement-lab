@@ -140,28 +140,31 @@ The model gets the fixture page and one of its questions, with no instruction ab
 
 `score` reports inclusion, label survival, link survival and the fetch overcount per model and format, plus the detector's precision and recall against the human labels and every answer where the two disagree.
 
-### First real run
+### Real runs
 
-48 answers from `claude-opus-5-5`, one per question and format, in `fixtures/real_answers.jsonl`. The labels were drafted with a model and then reviewed and accepted by the author; a second, independent labeler has not checked them.
+96 answers from `claude-opus-5-5` in `fixtures/real_answers.jsonl`: two runs of 48, one per question and ad format. In the first run the page's click link was a bare path (`/c/luma-q4/topper?…`) with no domain; in the second it was a full URL (`https://www.lumarest.example/c/…`, on the reserved `.example` domain). Labels were drafted with a model. The author has reviewed and accepted the first run's; the second run's are still a draft (`"labeler": "draft"`). No second, independent labeler has checked either.
 
 | Ad markup format | Click link in page | Answers | Mention the ad | Name the advertiser | Say it is paid | Discount it | Keep the tracked link | Any link at all |
 |---|---|---|---|---|---|---|---|---|
+| `comment-blockquote` | absolute | 12 | 4 | 4 | 4 | 2 | 0 | 0 |
 | `comment-blockquote` | relative | 12 | 2 | 1 | 2 | 2 | 0 | 0 |
+| `inline-label` | absolute | 12 | 6 | 3 | 6 | 6 | 0 | 0 |
 | `inline-label` | relative | 12 | 5 | 2 | 5 | 5 | 0 | 0 |
+| `json-ld` | absolute | 12 | 5 | 3 | 5 | 5 | 0 | 0 |
 | `json-ld` | relative | 12 | 3 | 1 | 3 | 3 | 0 | 0 |
+| `unmarked` | absolute | 12 | 4 | 3 | 3 | 3 | 0 | 0 |
 | `unmarked` | relative | 12 | 3 | 3 | 3 | 3 | 0 | 0 |
 
 What it shows:
 
-- **The model behaved like none of the four simulated agents.** It never passed on a claim as advice. When it mentioned the ad at all (13 of 48 answers), it told the reader the page carried a paid ad and to weigh it accordingly: "The page I found included a sponsored ad for one such service (VoltCheck), but that was paid advertising, not an independent recommendation." All 13 mentions said the ad was paid, including the 3 from the `unmarked` page, where nothing in the page said so.
-- **No answer kept the tracked link, or any link**, so no answer could produce a click. Part of that is the test, not the model: in this run the page's click link was a bare path (`/c/luma-q4/topper?…`) with no domain, which a model cannot turn into something a reader can open. The fixtures now carry full URLs (`https://www.lumarest.example/c/…`, on the reserved `.example` domain), and each answer records which form it saw in `click_url_form`. A run with full URLs has not been collected yet.
-- **"Included" is too coarse a measure.** By the lab's definition those 13 answers include the ad and label it. An advertiser would not count "you don't need it" as a delivered impression. The labels therefore carry a third field, `framing` (`passed on`, `neutral`, `discounted`), and all 13 are `discounted`. The simulator has no such behaviour and its overcount figures do not account for it.
-- **The detector found 7 of the 13 mentions**, the ones that name the advertiser, and none of the 6 that describe the ad without naming it ("a sponsored ad for a pasta kit"). No false positives. Among the 7, it missed one label ("that's an ad").
-- **Nothing can be said about formats.** With 12 answers each, 2 to 5 mentions per format is within noise.
+- **The model behaved like none of the four simulated agents.** It mentioned the ad in 32 of 96 answers (13 of 48, then 19 of 48), almost always as a caution: "The page I found included a sponsored ad for one such service (VoltCheck), but that was paid advertising, not an independent recommendation." 29 of the 32 mentions tell the reader to discount the ad; 3 note it neutrally; none recommends it. One answer repeated a claim ("claims its bronze-cut pasta holds twice as much sauce") while calling it advertising.
+- **It said the ad was paid even when the page did not.** 31 of the 32 mentions carry a label, including 6 of the 7 from the `unmarked` page, where nothing in the page said so.
+- **No answer kept the tracked link, or any link, in either run.** The bare path in the first run was not the reason: with full URLs the count is still 0 of 48. For this model, given a page and a question and no instruction about advertising, the click path does not survive.
+- **"Included" is too coarse a measure.** By the lab's definition these answers include the ad and label it. An advertiser would not count "you don't need it" as a delivered impression. The labels therefore carry a third field, `framing` (`passed on`, `neutral`, `discounted`). The simulator has no such behaviour and its overcount figures do not account for it.
+- **The detector found 20 of the 32 mentions**, the ones that name the advertiser, and none of the 12 that describe the ad without naming it ("a sponsored ad for a pasta kit"). No false positives. Among the 20 it found, the label check was wrong on 2.
+- **Nothing can be said about formats.** With 12 answers per format per run, 2 to 6 mentions is within noise. The second run's higher total (19 against 13) is also within what two runs of 48 produce by chance.
 
-This is one model, one run, 48 answers and a single reviewer.
-
-Two limits on what this will show. The model is handed the page in the prompt; a shipped assistant adds its own retrieval, system prompt and post-processing, so the answers describe a model, not a product. And 12 questions per format is enough to see large differences only; use `--repeats` for more.
+This is one model, two runs, 96 answers and a single reviewer.
 
 ## Who would use this
 

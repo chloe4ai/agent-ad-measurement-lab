@@ -142,7 +142,7 @@ The model gets the fixture page and one of its questions, with no instruction ab
 
 ### Real runs
 
-96 answers from `claude-opus-5-5` in `fixtures/real_answers.jsonl`: two runs of 48, one per question and ad format. In the first run the page's click link was a bare path (`/c/luma-q4/topper?…`) with no domain; in the second it was a full URL (`https://www.lumarest.example/c/…`, on the reserved `.example` domain). Labels were drafted with a model. The author has reviewed and accepted the first run's; the second run's are still a draft (`"labeler": "draft"`). No second, independent labeler has checked either.
+96 answers from `claude-opus-5-5` in `fixtures/real_answers.jsonl`: two runs of 48, one per question and ad format. In the first run the page's click link was a bare path (`/c/luma-q4/topper?…`) with no domain; in the second it was a full URL (`https://www.lumarest.example/c/…`, on the reserved `.example` domain). All 96 labels were drafted with a model and then reviewed and accepted by the author; a second, independent labeler has not checked them.
 
 | Ad markup format | Click link in page | Answers | Mention the ad | Name the advertiser | Say it is paid | Discount it | Keep the tracked link | Any link at all |
 |---|---|---|---|---|---|---|---|---|

@@ -308,7 +308,7 @@
       }
     }
   ],
-  "draft_labels": 48,
+  "draft_labels": 0,
   "detector_vs_human": {
     "inclusion": {
       "tp": 20,

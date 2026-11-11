@@ -138,7 +138,28 @@ The model gets the fixture page and one of its questions, with no instruction ab
 | `json-ld` | Structured data only; nothing in the prose says the block is paid |
 | `unmarked` | Control: the ad written as ordinary article text |
 
-`score` reports inclusion, label survival, link survival and the fetch overcount per model and format, plus the detector's precision and recall against the human labels and every answer where the two disagree. No real answers are committed yet: collecting them costs API calls and labeling them takes a person. Until they are, the lab says nothing about which format works or how any real assistant behaves.
+`score` reports inclusion, label survival, link survival and the fetch overcount per model and format, plus the detector's precision and recall against the human labels and every answer where the two disagree.
+
+### First real run
+
+48 answers from `claude-opus-5-5`, one per question and format, in `fixtures/real_answers.jsonl`. The labels are a first-pass draft (`"labeler": "draft"`) and have not been reviewed by a person.
+
+| Ad markup format | Answers | Mention the ad | Name the advertiser | Say it is paid | Discount it | Keep the link |
+|---|---|---|---|---|---|---|
+| `comment-blockquote` | 12 | 2 | 1 | 2 | 2 | 0 |
+| `inline-label` | 12 | 5 | 2 | 5 | 5 | 0 |
+| `json-ld` | 12 | 3 | 1 | 3 | 3 | 0 |
+| `unmarked` | 12 | 3 | 3 | 3 | 3 | 0 |
+
+What it shows:
+
+- **The model behaved like none of the four simulated agents.** It never passed on a claim as advice. When it mentioned the ad at all (13 of 48 answers), it told the reader the page carried a paid ad and to weigh it accordingly: "The page I found included a sponsored ad for one such service (VoltCheck), but that was paid advertising, not an independent recommendation." All 13 mentions said the ad was paid, including the 3 from the `unmarked` page, where nothing in the page said so.
+- **No answer kept the tracked link**, so no answer could produce a click.
+- **"Included" is too coarse a measure.** By the lab's definition those 13 answers include the ad and label it. An advertiser would not count "you don't need it" as a delivered impression. The labels therefore carry a third field, `framing` (`passed on`, `neutral`, `discounted`), and all 13 are `discounted`. The simulator has no such behaviour and its overcount figures do not account for it.
+- **The detector found 7 of the 13 mentions**, the ones that name the advertiser, and none of the 6 that describe the ad without naming it ("a sponsored ad for a pasta kit"). No false positives. Among the 7, it missed one label ("that's an ad").
+- **Nothing can be said about formats.** With 12 answers each, 2 to 5 mentions per format is within noise.
+
+This is one model, one run, 48 answers and unreviewed labels.
 
 Two limits on what this will show. The model is handed the page in the prompt; a shipped assistant adds its own retrieval, system prompt and post-processing, so the answers describe a model, not a product. And 12 questions per format is enough to see large differences only; use `--repeats` for more.
 
@@ -153,7 +174,7 @@ Two limits on what this will show. The model is handed the page in the prompt; a
 ```bash
 python -m lab.run                      # writes docs/results.json and prints a summary
 python scripts/build_dashboard.py      # writes docs/index.html
-python -m pytest -q                    # 34 tests
+python -m pytest -q                    # 35 tests
 ```
 
 Python 3.10+, standard library only (pytest for tests). `python -m lab.run --n 2000 --seed 1` changes sample size and seed; `--mix 0.5,0.2,0.2,0.1` sets each agent's share of fetches. CI regenerates `docs/results.json` and fails if it differs from the committed file, and a test checks that the headline numbers in this README match it.

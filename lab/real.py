@@ -8,7 +8,7 @@ the detector against those labels.
 
     python -m lab.real collect --dry-run                 # how many calls, no spend
     python -m lab.real collect --models claude-opus-5-5  # writes fixtures/real_answers.jsonl
-    # hand-label "human": {"included": true/false, "disclosed": true/false} in that file
+    # hand-label "human": {"included": true/false, "disclosed": true/false, "framing": ...} in that file
     python -m lab.real score                              # rates per model and format, detector vs labels
     python -m lab.real judge-heldout                      # model-graded disclosure check on fixtures/heldout.json
 
@@ -32,6 +32,11 @@ from .detect import detect
 from .heldout import HELDOUT
 from .page import AD_FORMATS, Ad, Page, load_pages, render_agent_markdown
 from .stats import precision_recall, wilson
+
+# How the answer presents the ad it mentions. A mention is not an endorsement:
+# "the page carries a paid ad for X, you don't need it" names X and labels it,
+# and is worth something quite different from "X does this in 15 minutes".
+FRAMINGS = ("passed on", "neutral", "discounted")
 
 ANSWERS = Path(__file__).resolve().parent.parent / "fixtures" / "real_answers.jsonl"
 DEFAULT_MODEL = "claude-opus-5-5"
@@ -103,7 +108,7 @@ def collect(provider: Provider, models: list[str], formats: list[str], repeats: 
                 log(f"[{i}/{len(todo)}] {t['model']} {t['format']} {t['page_id']}: failed ({type(e).__name__}: {e})")
                 continue
             # A person fills these in. `linked` needs no label: the click URL is either in the text or not.
-            row = dict(t, text=text, stop_reason=stop, human={"included": None, "disclosed": None})
+            row = dict(t, text=text, stop_reason=stop, human={"included": None, "disclosed": None, "framing": None})
             fh.write(json.dumps(row) + "\n")
             fh.flush()
             written += 1
@@ -120,6 +125,8 @@ def score(rows: list[dict]) -> dict:
     ads = {p.page_id: p.ad for p in load_pages()}
     rows = [r for r in rows if r.get("stop_reason") != "refusal" and r.get("text")]
     groups: dict[tuple, dict] = defaultdict(lambda: dict(n=0, included=0, disclosed=0, linked=0))
+    labeled: dict[tuple, dict] = defaultdict(
+        lambda: dict(labeled=0, included=0, disclosed=0, names_advertiser=0, linked=0, framing={f: 0 for f in FRAMINGS}))
     inc = dict(tp=0, fp=0, fn=0, n=0)
     dis = dict(tp=0, fp=0, fn=0, n=0)
     disagreements = []
@@ -133,6 +140,16 @@ def score(rows: list[dict]) -> dict:
         human = r.get("human") or {}
         if _labeled(r, "included"):
             truth = human["included"]
+            h = labeled[(r["model"], r["format"])]
+            h["labeled"] += 1
+            if truth:
+                ad = ads[r["page_id"]]
+                h["included"] += 1
+                h["disclosed"] += human.get("disclosed") is True
+                h["names_advertiser"] += ad.advertiser.lower() in r["text"].lower()
+                h["linked"] += ad.click_url in r["text"]
+                if human.get("framing") in FRAMINGS:
+                    h["framing"][human["framing"]] += 1
             inc["n"] += 1
             inc["tp"] += d.included and truth
             inc["fp"] += d.included and not truth
@@ -164,6 +181,9 @@ def score(rows: list[dict]) -> dict:
              "link_survival": wilson(g["linked"], g["included"]),
              "overcount_if_billed_on_fetch": g["n"] / g["disclosed"] if g["disclosed"] else None}
             for (m, f), g in sorted(groups.items())],
+        # What a person saw in the answers; independent of the detector.
+        "human_by_model_and_format": [dict(model=m, format=f, **h) for (m, f), h in sorted(labeled.items())],
+        "draft_labels": sum(1 for r in rows if (r.get("human") or {}).get("labeler") == "draft"),
         "detector_vs_human": {"inclusion": pr(inc), "disclosure": pr(dis)},
         "disagreements": disagreements,
     }
@@ -240,6 +260,13 @@ def main(argv: list[str] | None = None) -> None:
             print(f"  {g['model']} / {g['format']}: n={g['answers']}  inclusion {_pct(g['inclusion'])}  "
                   f"label kept {_pct(g['disclosure_survival'])}  link kept {_pct(g['link_survival'])}  "
                   f"overcount {'n/a' if o is None else f'{o:.1f}x'}")
+        if res["human_by_model_and_format"]:
+            draft = f" ({res['draft_labels']} are unreviewed drafts)" if res["draft_labels"] else ""
+            print(f"Human labels{draft}:")
+        for h in res["human_by_model_and_format"]:
+            fr = ", ".join(f"{n} {k}" for k, n in h["framing"].items() if n) or "framing not labeled"
+            print(f"  {h['model']} / {h['format']}: {h['included']} of {h['labeled']} mention the ad; "
+                  f"{h['names_advertiser']} name the advertiser, {h['disclosed']} labeled, {h['linked']} keep the link; {fr}")
         for k, v in res["detector_vs_human"].items():
             if v["n"]:
                 print(f"  {k} detector vs {v['n']} human labels: precision {v['precision']:.3f}, recall {v['recall']:.3f}")

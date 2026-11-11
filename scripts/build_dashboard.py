@@ -10,6 +10,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 RESULTS = ROOT / "docs" / "results.json"
+REAL = ROOT / "docs" / "real_results.json"  # written by `python -m lab.real score --out`; optional
 OUT = ROOT / "docs" / "index.html"
 
 TEMPLATE = r"""<!DOCTYPE html>
@@ -100,6 +101,12 @@ a{color:var(--accent)}
     <p class="sub" id="sweepSub">A verified user-agent token that fetches more pages than the threshold is treated as a crawler.
     Lower thresholds reject more genuine sessions; higher ones bill more relayed, scripted sessions that come from real operator IPs.</p>
     <table id="sweepTable"></table>
+  </section>
+
+  <section class="card" id="realCard">
+    <h2>What a real model did with the same pages</h2>
+    <p class="sub" id="realSub"></p>
+    <table id="realTable"></table>
   </section>
 
   <section class="card">
@@ -247,6 +254,21 @@ document.getElementById("heldoutTable").innerHTML =
   [["Disclosure label", "disclosure"], ["Inclusion, no name or link", "inclusion"]].filter(([, k]) => ho[k]).map(([l, k]) =>
    `<tr><td>${l}</td><td class="n">${fmt(ho[k].cases)}</td><td class="n">${pct(ho[k].precision)}</td><td class="n">${pct(ho[k].recall)}</td>
     <td class="n">${pct(v[k].precision)}</td><td class="n">${pct(v[k].recall)}</td></tr>`).join("");
+if (R.real && R.real.human_by_model_and_format.length) {
+  const hs = R.real.human_by_model_and_format, sum = k => hs.reduce((t, h) => t + h[k], 0);
+  const di = R.real.detector_vs_human.inclusion, disc = hs.reduce((t, h) => t + h.framing.discounted, 0);
+  document.getElementById("realSub").innerHTML = `Not simulated: ${fmt(R.real.answers)} answers from ${esc([...new Set(hs.map(h => h.model))].join(", "))},
+    ${fmt(hs[0].labeled)} per ad markup format, given the page and a question with no instruction about advertising.
+    ${sum("included")} answers mention the ad; ${disc} of those present it as something to discount ("that's a paid ad, you don't need it"),
+    and ${sum("linked")} keep the tracked link. The rule-based detector found ${di.tp} of the ${di.tp + di.fn} mentions.` +
+    (R.real.draft_labels ? ` Labels are a first-pass draft, not yet reviewed by a person.` : "") +
+    ` At ${fmt(hs[0].labeled)} answers per format the differences between formats are within noise.`;
+  document.getElementById("realTable").innerHTML =
+    `<tr><th>Ad markup format</th><th class="n">Answers</th><th class="n">Mention the ad</th><th class="n">Name the advertiser</th>
+     <th class="n">Say it is paid</th><th class="n">Discount it</th><th class="n">Keep the link</th></tr>` +
+    hs.map(h => `<tr><td>${esc(h.format)}</td><td class="n">${h.labeled}</td><td class="n">${h.included}</td><td class="n">${h.names_advertiser}</td>
+     <td class="n">${h.disclosed}</td><td class="n">${h.framing.discounted}</td><td class="n">${h.linked}</td></tr>`).join("");
+} else document.getElementById("realCard").style.display = "none";
 document.getElementById("page").textContent = R.sample_page;
 document.getElementById("examples").innerHTML = R.examples.map(e =>
   `<div class="ex"><div class="meta">${esc(e.agent)} · “${esc(e.query)}”</div>
@@ -263,6 +285,7 @@ document.getElementById("foot").innerHTML =
 
 def main() -> None:
     data = json.loads(RESULTS.read_text())
+    data["real"] = json.loads(REAL.read_text()) if REAL.exists() else None
     payload = json.dumps(data).replace("</", "<\\/")
     OUT.write_text(TEMPLATE.replace("__DATA__", payload))
     print(f"Wrote {OUT}")

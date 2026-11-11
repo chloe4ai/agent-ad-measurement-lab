@@ -21,7 +21,23 @@
     {"page_id": "cl-ev-014",    "disclosed": false, "text": "VoltCheck runs the test in 15 minutes. Ask your partner which morning works best."},
     {"page_id": "nw-sleep-001", "disclosed": false, "text": "Luma Rest offers a 100-night home trial with free returns, which plenty of people like."},
     {"page_id": "ht-pasta-022", "disclosed": false, "text": "Ferro Pantry's bronze-cut pasta holds sauce well; add a pinch of salt to the water."},
-    {"page_id": "cl-ev-014",    "disclosed": false, "text": "VoltCheck can come to your driveway. Paid parking near most dealerships makes that convenient."}
+    {"page_id": "cl-ev-014",    "disclosed": false, "text": "VoltCheck can come to your driveway. Paid parking near most dealerships makes that convenient."},
+    {"page_id": "cl-ev-014",    "disclosed": true,  "text": "VoltCheck (sponsored) runs a certified battery test at your driveway in 15 minutes."},
+    {"page_id": "nw-sleep-001", "disclosed": true,  "text": "Ad: Luma Rest's cooling topper lowers surface temperature by up to 3 degrees."},
+    {"page_id": "ht-pasta-022", "disclosed": true,  "text": "Full disclosure, Ferro Pantry compensated the publisher for this mention of its weeknight kit."},
+    {"page_id": "nw-sleep-001", "disclosed": true,  "text": "[Advertisement] Luma Rest offers a 100-night home trial."},
+    {"page_id": "cl-ev-014",    "disclosed": true,  "text": "This part of the page is promotional material from VoltCheck, which runs a 15-minute battery test."},
+    {"page_id": "ht-pasta-022", "disclosed": true,  "text": "Ferro Pantry's kit is a sponsored recommendation on the page I read."},
+    {"page_id": "nw-sleep-001", "disclosed": true,  "text": "The article I read includes paid content from Luma Rest, whose topper lowers surface temperature overnight."},
+    {"page_id": "cl-ev-014",    "disclosed": true,  "text": "VoltCheck (heads up, the page marks this as an ad) will test the battery in your driveway."},
+    {"page_id": "ht-pasta-022", "disclosed": true,  "text": "The publisher may receive compensation when you order the Ferro Pantry kit."},
+    {"page_id": "nw-sleep-001", "disclosed": true,  "text": "Luma Rest is a marketing partner of Northwind Daily and offers a 100-night trial."},
+    {"page_id": "nw-sleep-001", "disclosed": false, "text": "Luma Rest offers a 100-night trial; I have no sponsorship relationship with them."},
+    {"page_id": "cl-ev-014",    "disclosed": false, "text": "VoltCheck runs a 15-minute test. Independent reviewers, not advertisers, rate it well."},
+    {"page_id": "ht-pasta-022", "disclosed": false, "text": "Ferro Pantry ships a kit for four. In my house it got promoted to weeknight favourite quickly."},
+    {"page_id": "nw-sleep-001", "disclosed": false, "text": "Luma Rest's topper lowers surface temperature. An unpaid tester confirmed it."},
+    {"page_id": "cl-ev-014",    "disclosed": false, "text": "VoltCheck reports include a resale value estimate. Adding one to your listing helps it sell."},
+    {"page_id": "ht-pasta-022", "disclosed": false, "text": "Ferro Pantry's bronze-cut pasta holds twice as much sauce. Their partnership with small mills is well known."}
   ],
   "inclusion": [
     {"page_id": "nw-sleep-001", "included": true,  "text": "A cooling pad for your bed can drop how hot the mattress feels by a few degrees through the night."},
@@ -33,6 +49,16 @@
     {"page_id": "ht-pasta-022", "included": false, "text": "Bronze dies give pasta a rough surface; any brand from a good shop will do."},
     {"page_id": "nw-sleep-001", "included": false, "text": "Cooling the bedroom to 18 degrees helps more than any topper."},
     {"page_id": "cl-ev-014",    "included": false, "text": "A battery state-of-health test from your dealer is the safest check."},
-    {"page_id": "cl-ev-014",    "included": false, "text": "Ask the seller for a recent state-of-health reading and a resale value estimate from a dealer."}
+    {"page_id": "cl-ev-014",    "included": false, "text": "Ask the seller for a recent state-of-health reading and a resale value estimate from a dealer."},
+    {"page_id": "nw-sleep-001", "included": true,  "text": "There are toppers that cut the temperature of the sleeping surface by as much as three degrees over the night."},
+    {"page_id": "nw-sleep-001", "included": true,  "text": "You can try one for 100 nights at home and send it back for free."},
+    {"page_id": "cl-ev-014",    "included": true,  "text": "A technician can come to your driveway and run a certified health check on the battery in fifteen minutes."},
+    {"page_id": "ht-pasta-022", "included": true,  "text": "A meal kit with pasta and a sauce base that feeds four can be delivered for weeknights."},
+    {"page_id": "ht-pasta-022", "included": true,  "text": "Pasta extruded through bronze clings to roughly double the sauce compared with smooth pasta."},
+    {"page_id": "nw-sleep-001", "included": false, "text": "Deep sleep shortens with age and night waking becomes more frequent."},
+    {"page_id": "ht-pasta-022", "included": false, "text": "Save some starchy pasta water to make the sauce glossy."},
+    {"page_id": "cl-ev-014",    "included": false, "text": "Fast-charging history matters more than mileage for degradation."},
+    {"page_id": "nw-sleep-001", "included": false, "text": "Trying a new bedtime at home for a few nights will show whether it helps."},
+    {"page_id": "ht-pasta-022", "included": false, "text": "A weeknight pasta for four needs about 400 grams of dried pasta."}
   ]
 }

@@ -2,7 +2,13 @@
   "config": {
     "n_per_agent": 600,
     "seed": 42,
-    "base_ctr": 0.04
+    "base_ctr": 0.04,
+    "agent_mix": [
+      0.25,
+      0.25,
+      0.25,
+      0.25
+    ]
   },
   "sample_page": "# Why your sleep gets worse in your forties\n_Northwind Daily_\n\nSleep architecture changes with age: deep sleep shortens and night waking becomes more frequent.\n\nResearchers point to shifting melatonin rhythms, caffeine sensitivity and late screen use as the main levers people can control.\n\n<!-- agent-ad id=\"ad-luma-07\" advertiser=\"Luma Rest\" -->\n> Sponsored content. Supplied by Luma Rest.\n>\n> - Luma Rest's cooling mattress topper lowers surface temperature by up to 3 degrees overnight.\n> - Luma Rest offers a 100-night home trial with free returns.\n> - [Try Luma Rest for 100 nights](/c/luma-q4/topper?i=ad-luma-07)\n<!-- /agent-ad -->\n\nA consistent wake time does more for sleep quality than a consistent bedtime.\n\nKeeping the bedroom cool, around 18 degrees Celsius, helps most adults fall asleep faster.\n",
   "agents": [
@@ -10,148 +16,206 @@
       "agent": "Faithful assistant",
       "fetched": 600,
       "inclusion": [
-        0.5716666666666667,
-        0.5317390215919523,
-        0.6106824346310041
+        0.5616666666666666,
+        0.5216960171649179,
+        0.6008526777246028
       ],
       "disclosure_survival": [
-        0.9154518950437318,
-        0.8812117232070995,
-        0.9404890185724333
+        0.9347181008902077,
+        0.9031395843842094,
+        0.9564972674554721
       ],
       "link_survival": [
-        0.8104956268221575,
-        0.7656680761277737,
-        0.848445109833772
+        0.8249258160237388,
+        0.7807519368657977,
+        0.8617752663863875
       ],
-      "delivered_disclosed": 314,
-      "clicks": 11,
-      "clicks_per_1k_fetches": 18.333333333333332,
+      "delivered_disclosed": 315,
+      "clicks": 9,
+      "clicks_per_1k_fetches": 15.0,
+      "click_rate": [
+        0.015,
+        0.00791115278835805,
+        0.028259922540006213
+      ],
+      "included": 337,
+      "overcount_if_billed_on_fetch": 1.9047619047619047,
       "inclusion_when_relevant": [
-        0.9024390243902439,
-        0.862609972796015,
-        0.9316367924535229
+        0.8464052287581699,
+        0.8017332433116976,
+        0.8824873390762064
       ]
     },
     {
       "agent": "Summarizing assistant",
       "fetched": 600,
       "inclusion": [
-        0.43,
-        0.39095472654679364,
-        0.46993594411915596
+        0.4116666666666667,
+        0.3729710472070691,
+        0.45148622768091495
       ],
       "disclosure_survival": [
-        0.5038759689922481,
-        0.44325798333515953,
-        0.5643802223586645
+        0.46153846153846156,
+        0.40043144152423854,
+        0.5238235464841301
       ],
       "link_survival": [
-        0.21705426356589147,
-        0.17110033638170247,
-        0.2713106479691417
+        0.3360323886639676,
+        0.28003479714880536,
+        0.3970522569921346
       ],
-      "delivered_disclosed": 130,
-      "clicks": 3,
-      "clicks_per_1k_fetches": 5.0,
+      "delivered_disclosed": 114,
+      "clicks": 4,
+      "clicks_per_1k_fetches": 6.666666666666667,
+      "click_rate": [
+        0.006666666666666667,
+        0.0025954592764893545,
+        0.017014981607345086
+      ],
+      "included": 247,
+      "overcount_if_billed_on_fetch": 5.2631578947368425,
       "inclusion_when_relevant": [
-        0.724907063197026,
-        0.6686573363356911,
-        0.7748234231965796
+        0.6644295302013423,
+        0.6090256915041312,
+        0.7156479121343335
       ]
     },
     {
       "agent": "Search assistant",
       "fetched": 600,
       "inclusion": [
-        0.425,
-        0.38604460609540475,
-        0.46490968390382686
+        0.38166666666666665,
+        0.34366429779773655,
+        0.42117469308994004
       ],
       "disclosure_survival": [
-        0.8117647058823529,
-        0.7592917134384076,
-        0.854983580795595
+        0.8034934497816594,
+        0.7472017585098487,
+        0.8497706038171582
       ],
       "link_survival": [
-        0.9372549019607843,
-        0.9005178072038916,
-        0.9610129513758728
+        0.9781659388646288,
+        0.9499148529406761,
+        0.9906387251141043
       ],
-      "delivered_disclosed": 207,
-      "clicks": 9,
-      "clicks_per_1k_fetches": 15.0,
+      "delivered_disclosed": 184,
+      "clicks": 3,
+      "clicks_per_1k_fetches": 5.0,
+      "click_rate": [
+        0.005,
+        0.0017018468527197168,
+        0.014596467142208754
+      ],
+      "included": 229,
+      "overcount_if_billed_on_fetch": 3.260869565217391,
       "inclusion_when_relevant": [
-        0.6775244299674267,
-        0.6233207818619687,
-        0.7273401335367423
+        0.5980392156862745,
+        0.5422163922934453,
+        0.6514309423446407
       ]
     },
     {
       "agent": "Sponsorship-averse assistant",
       "fetched": 600,
       "inclusion": [
-        0.058333333333333334,
-        0.0422392243817027,
-        0.08004715005821665
+        0.03833333333333333,
+        0.02567709025890139,
+        0.05686376151414639
       ],
       "disclosure_survival": [
-        0.9714285714285714,
-        0.8546659090672868,
-        0.9949386386341466
+        0.9565217391304348,
+        0.7900841350594088,
+        0.9922835330378734
       ],
       "link_survival": [
-        0.5714285714285714,
-        0.4085712925897337,
-        0.7201566691832108
+        0.43478260869565216,
+        0.25634368332198654,
+        0.6318895069498304
       ],
-      "delivered_disclosed": 34,
-      "clicks": 1,
-      "clicks_per_1k_fetches": 1.6666666666666667,
+      "delivered_disclosed": 22,
+      "clicks": 0,
+      "clicks_per_1k_fetches": 0.0,
+      "click_rate": [
+        0.0,
+        0.0,
+        0.006361933328210577
+      ],
+      "included": 23,
+      "overcount_if_billed_on_fetch": 27.272727272727273,
       "inclusion_when_relevant": [
-        0.09584664536741214,
-        0.06796369053585702,
-        0.1335300527099794
+        0.06031746031746032,
+        0.038950988882991776,
+        0.09227906390811202
       ]
     }
   ],
   "funnel": {
     "fetched": 2400,
-    "included": 891,
-    "included_and_disclosed": 685,
-    "clicks": 24,
-    "overcount_if_billed_on_fetch": 3.5036496350364965
+    "included": 836,
+    "included_and_disclosed": 635,
+    "clicks": 16,
+    "overcount_if_billed_on_fetch": 3.779527559055118
+  },
+  "end_to_end": {
+    "declared_user_agent_fetches": 12959,
+    "pass_traffic_rules": 2522,
+    "projected_included": 878.4966666666667,
+    "projected_included_and_disclosed": 667.2791666666667,
+    "projected_clicks": 16.813333333333336,
+    "overcount_declared_vs_delivered": 19.420657271132146,
+    "true_delivered": 779.49,
+    "true_overcount": 16.624972738585484
   },
   "ground_truth": {
-    "included": 899,
-    "included_and_disclosed": 685,
-    "linked": 593
+    "included": 863,
+    "included_and_disclosed": 648,
+    "linked": 595
   },
   "detector_validation": {
     "inclusion": {
       "precision": 1.0,
-      "recall": 0.9911012235817576,
-      "tp": 891,
+      "recall": 0.9687137891077636,
+      "tp": 836,
       "fp": 0,
-      "fn": 8
+      "fn": 27,
+      "recall_by_evidence": [
+        {
+          "evidence": "tracked link",
+          "answers": 595,
+          "detected": 595,
+          "recall": 1.0
+        },
+        {
+          "evidence": "advertiser name, no link",
+          "answers": 174,
+          "detected": 174,
+          "recall": 1.0
+        },
+        {
+          "evidence": "claim wording only",
+          "answers": 94,
+          "detected": 67,
+          "recall": 0.7127659574468085
+        }
+      ]
     },
     "disclosure": {
       "precision": 1.0,
       "recall": 1.0,
-      "tp": 685,
+      "tp": 635,
       "fp": 0,
       "fn": 0
     },
     "heldout": {
       "disclosure": {
-        "cases": 21,
-        "accuracy": 0.3333333333333333,
-        "precision": 0.5,
-        "recall": 0.2857142857142857,
-        "tp": 4,
-        "fp": 4,
-        "fn": 10,
-        "tn": 3,
+        "cases": 37,
+        "accuracy": 0.3783783783783784,
+        "precision": 0.5333333333333333,
+        "recall": 0.3333333333333333,
+        "tp": 8,
+        "fp": 7,
+        "fn": 16,
+        "tn": 6,
         "errors": [
           {
             "text": "A cooling topper can help. Luma Rest's topper lowers surface temperature by up to 3 degrees overnight (Ad).",
@@ -222,18 +286,63 @@
             "text": "VoltCheck can come to your driveway. Paid parking near most dealerships makes that convenient.",
             "expected": false,
             "detected": true
+          },
+          {
+            "text": "Ad: Luma Rest's cooling topper lowers surface temperature by up to 3 degrees.",
+            "expected": true,
+            "detected": false
+          },
+          {
+            "text": "Full disclosure, Ferro Pantry compensated the publisher for this mention of its weeknight kit.",
+            "expected": true,
+            "detected": false
+          },
+          {
+            "text": "This part of the page is promotional material from VoltCheck, which runs a 15-minute battery test.",
+            "expected": true,
+            "detected": false
+          },
+          {
+            "text": "VoltCheck (heads up, the page marks this as an ad) will test the battery in your driveway.",
+            "expected": true,
+            "detected": false
+          },
+          {
+            "text": "The publisher may receive compensation when you order the Ferro Pantry kit.",
+            "expected": true,
+            "detected": false
+          },
+          {
+            "text": "Luma Rest is a marketing partner of Northwind Daily and offers a 100-night trial.",
+            "expected": true,
+            "detected": false
+          },
+          {
+            "text": "Luma Rest offers a 100-night trial; I have no sponsorship relationship with them.",
+            "expected": false,
+            "detected": true
+          },
+          {
+            "text": "VoltCheck runs a 15-minute test. Independent reviewers, not advertisers, rate it well.",
+            "expected": false,
+            "detected": true
+          },
+          {
+            "text": "Ferro Pantry ships a kit for four. In my house it got promoted to weeknight favourite quickly.",
+            "expected": false,
+            "detected": true
           }
         ]
       },
       "inclusion": {
-        "cases": 10,
+        "cases": 20,
         "accuracy": 0.7,
         "precision": 1.0,
-        "recall": 0.5,
-        "tp": 3,
+        "recall": 0.45454545454545453,
+        "tp": 5,
         "fp": 0,
-        "fn": 3,
-        "tn": 4,
+        "fn": 6,
+        "tn": 9,
         "errors": [
           {
             "text": "A cooling pad for your bed can drop how hot the mattress feels by a few degrees through the night.",
@@ -249,6 +358,21 @@
             "text": "There is a mobile service that will check battery health at your home in about a quarter of an hour.",
             "expected": true,
             "detected": false
+          },
+          {
+            "text": "There are toppers that cut the temperature of the sleeping surface by as much as three degrees over the night.",
+            "expected": true,
+            "detected": false
+          },
+          {
+            "text": "You can try one for 100 nights at home and send it back for free.",
+            "expected": true,
+            "detected": false
+          },
+          {
+            "text": "Pasta extruded through bronze clings to roughly double the sauce compared with smooth pasta.",
+            "expected": true,
+            "detected": false
           }
         ]
       }
@@ -258,56 +382,56 @@
     {
       "agent": "Faithful assistant",
       "query": "why do I wake up at 3am every night",
-      "answer": "Keeping the bedroom cool, around 18 degrees Celsius, helps most adults fall asleep faster. Luma Rest has a 100-night home trial with free returns. Note: this is an advertisement from Luma Rest. [Try Luma Rest for 100 nights](/c/luma-q4/topper?i=ad-luma-07) Researchers point to shifting melatonin rhythms, caffeine sensitivity and late screen use as the main levers people can control.",
+      "answer": "Keeping the bedroom cool, around 18 degrees Celsius, helps most adults fall asleep faster. Luma Rest offers a 100-night home trial with free returns. [Try Luma Rest for 100 nights](/c/luma-q4/topper?i=ad-luma-07) Researchers point to shifting melatonin rhythms, caffeine sensitivity and late screen use as the main levers people can control.",
       "detected_by": "tracked-link",
-      "disclosed": true
+      "disclosed": false
     },
     {
       "agent": "Faithful assistant",
-      "query": "quick weeknight pasta that tastes good",
-      "answer": "Blooming tomato paste olive oil for two minutes builds the deep flavor of a long-simmered sauce. Ferro Pantry's bronze-cut pasta holds twice as much sauce as smooth extruded pasta. Ferro Pantry paid to place this suggestion. Finishing the pasta in the pan for the last lets it absorb the sauce instead of sitting under it.",
+      "query": "is fast charging bad for EV batteries",
+      "answer": "A battery health report estimates remaining capacity as a percentage of the original pack. Most packs lose capacity quickly in the first two years and then settle into a slow decline. VoltCheck does a certified battery state-of-health check in 15 minutes at your driveway. Note: this is an advertisement from VoltCheck.",
       "detected_by": "advertiser-name",
       "disclosed": true
     },
     {
       "agent": "Summarizing assistant",
-      "query": "why do I wake up at 3am every night",
-      "answer": "Researchers to shifting melatonin rhythms, sensitivity and late screen use as the main people can control. Rest's cooling topper reduces sleeping-surface temp by up degrees through the night. A consistent wake time does more for sleep quality than a consistent bedtime.",
-      "detected_by": "none",
+      "query": "does caffeine affect deep sleep",
+      "answer": "Researchers point to shifting melatonin rhythms, caffeine sensitivity and late screen use as the main levers people control. Luma Rest's cooling mattress reduces sleeping-surface temp by up degrees through the night. [Try Luma Rest for 100 nights](/c/luma-q4/topper?i=ad-luma-07) A consistent wake time does more for sleep quality than a consistent bedtime.",
+      "detected_by": "tracked-link",
       "disclosed": false
     },
     {
       "agent": "Summarizing assistant",
-      "query": "quick weeknight pasta that tastes good",
-      "answer": "Starchy water is the binder that turns a thin sauce glossy and clingy. Ferro sends a weeknight pasta kit with sauce and pasta for four. Blooming tomato paste in olive oil for two minutes builds the flavor of a long-simmered sauce.",
-      "detected_by": "claim-overlap 0.67",
+      "query": "how to make tomato sauce taste richer fast",
+      "answer": "Blooming tomato paste in olive for two minutes builds the deep flavor of a long-simmered One brand's pasta grabs as much sauce extruded pasta. Starchy pasta water is the binder that turns a thin sauce glossy and clingy.",
+      "detected_by": "none",
       "disclosed": false
     },
     {
       "agent": "Search assistant",
-      "query": "how much deep sleep do adults need",
-      "answer": "A consistent wake time does more for sleep quality than a bedtime. Keeping the bedroom cool, around 18 degrees Celsius, helps most adults fall asleep faster. Luma Rest offers a 100-night home trial with free return shipping. (Sponsored by Luma Rest.) [Try Luma Rest for 100 nights](/c/luma-q4/topper?i=ad-luma-07)",
+      "query": "what battery health percentage is good for a used EV",
+      "answer": "A battery health report estimates remaining capacity as a percentage of the original pack. VoltCheck reports come with a cell-level map and a resale value valuation. VoltCheck paid to place this suggestion. [Book a VoltCheck battery test](/c/voltcheck-q4/book?i=ad-voltcheck-02) Most packs lose capacity quickly the first two years and then settle into a slow decline.",
       "detected_by": "tracked-link",
       "disclosed": true
     },
     {
       "agent": "Search assistant",
+      "query": "why do I wake up at 3am every night",
+      "answer": "Keeping the bedroom cool, around 18 degrees Celsius, helps most adults fall asleep faster. One brand's topper reduces sleeping-surface temperature by up to 3 degrees. [Try Luma Rest for 100 nights](/c/luma-q4/topper?i=ad-luma-07) Researchers point to shifting melatonin rhythms, caffeine sensitivity and late screen use as the main levers people can control.",
+      "detected_by": "tracked-link",
+      "disclosed": false
+    },
+    {
+      "agent": "Sponsorship-averse assistant",
+      "query": "best bedroom temperature for sleep",
+      "answer": "Sleep architecture with age: deep sleep shortens and night waking becomes more frequent. Luma Rest's cooling mattress topper surface temperature by up to 3 degrees overnight. (Sponsored by Luma Rest.) Researchers point to shifting melatonin rhythms, caffeine sensitivity and late screen use as the main levers people can control.",
+      "detected_by": "advertiser-name",
+      "disclosed": true
+    },
+    {
+      "agent": "Sponsorship-averse assistant",
       "query": "quick weeknight pasta that tastes good",
-      "answer": "A splash of acid at the end, lemon or vinegar, brightens the whole dish. Finishing the pasta in the pan for the last minute lets it absorb the sauce instead of sitting under it. Ferro Pantry's bronze-cut pasta holds twice much sauce as smooth extruded pasta. Ferro Pantry paid to place this suggestion. [Get the Ferro Pantry weeknight kit](/c/ferro-q4/kit?i=ad-ferro-11)",
-      "detected_by": "tracked-link",
-      "disclosed": true
-    },
-    {
-      "agent": "Sponsorship-averse assistant",
-      "query": "how to check a used EV battery before buying",
-      "answer": "Buyers should ask for a recent state-of-health reading rather than relying on the dashboard range valuation VoltCheck runs a accredited test in min at your driveway. Note: this is an advertisement from VoltCheck. [Book a VoltCheck battery test](/c/voltcheck-q4/book?i=ad-voltcheck-02) Most packs lose capacity quickly in the first two years and then settle into a slow",
-      "detected_by": "tracked-link",
-      "disclosed": true
-    },
-    {
-      "agent": "Sponsorship-averse assistant",
-      "query": "how to make tomato sauce taste richer fast",
-      "answer": "Blooming tomato paste in olive oil for two minutes builds the deep flavor of a long-simmered sauce. Ferro bronze-cut pasta holds 2x as much sauce as smooth extruded pasta. Ferro Pantry paid to place this suggestion. Starchy pasta water is the binder turns a thin sauce glossy and clingy.",
+      "answer": "Starchy pasta water is the binder turns a thin sauce glossy and clingy. Ferro Pantry ships a pasta bundle with sauce base and pasta for four. Note: this is an advertisement from Ferro Pantry. Blooming tomato paste in olive for two minutes builds the deep flavor of a long-simmered sauce.",
       "detected_by": "advertiser-name",
       "disclosed": true
     }
@@ -491,15 +615,21 @@
       20
     ],
     "overcount_if_billed_on_fetch": {
-      "min": 3.409090909090909,
-      "median": 3.6117401938581395,
-      "max": 3.9408866995073892,
+      "min": 3.4285714285714284,
+      "median": 3.695152305321797,
+      "max": 3.9800995024875623,
+      "n": 20
+    },
+    "end_to_end_overcount": {
+      "min": 17.41445258228847,
+      "median": 18.90097578138314,
+      "max": 20.59402419260319,
       "n": 20
     },
     "inclusion_recall": {
-      "min": 0.986827661909989,
-      "median": 0.9932772075365579,
-      "max": 0.9977653631284916,
+      "min": 0.9575163398692811,
+      "median": 0.9681163865516929,
+      "max": 0.9817792068595927,
       "n": 20
     },
     "billable_vs_truth": {
@@ -512,61 +642,79 @@
       {
         "agent": "Faithful assistant",
         "inclusion": {
-          "min": 0.5266666666666666,
-          "median": 0.5825,
-          "max": 0.6183333333333333,
+          "min": 0.53,
+          "median": 0.5616666666666666,
+          "max": 0.61,
           "n": 20
         },
         "disclosure_survival": {
-          "min": 0.88,
-          "median": 0.9158717791314477,
-          "max": 0.9470588235294117,
+          "min": 0.8971428571428571,
+          "median": 0.9250321990942707,
+          "max": 0.9436201780415431,
+          "n": 20
+        },
+        "overcount_if_billed_on_fetch": {
+          "min": 1.749271137026239,
+          "median": 1.9077949651198058,
+          "max": 2.0618556701030926,
           "n": 20
         },
         "clicks_per_1k_fetches": {
-          "min": 10.0,
-          "median": 18.333333333333332,
-          "max": 30.0,
+          "min": 13.333333333333334,
+          "median": 16.666666666666668,
+          "max": 26.666666666666668,
           "n": 20
         }
       },
       {
         "agent": "Summarizing assistant",
         "inclusion": {
-          "min": 0.39166666666666666,
-          "median": 0.4358333333333333,
-          "max": 0.49333333333333335,
+          "min": 0.36333333333333334,
+          "median": 0.4033333333333333,
+          "max": 0.435,
           "n": 20
         },
         "disclosure_survival": {
-          "min": 0.3735408560311284,
-          "median": 0.4591864969562811,
-          "max": 0.5440613026819924,
+          "min": 0.4139344262295082,
+          "median": 0.45996525317950276,
+          "max": 0.5095785440613027,
+          "n": 20
+        },
+        "overcount_if_billed_on_fetch": {
+          "min": 4.511278195488722,
+          "median": 5.42997542997543,
+          "max": 6.185567010309279,
           "n": 20
         },
         "clicks_per_1k_fetches": {
-          "min": 0.0,
-          "median": 4.166666666666667,
-          "max": 10.0,
+          "min": 1.6666666666666667,
+          "median": 5.0,
+          "max": 11.666666666666666,
           "n": 20
         }
       },
       {
         "agent": "Search assistant",
         "inclusion": {
-          "min": 0.3466666666666667,
-          "median": 0.39666666666666667,
-          "max": 0.425,
+          "min": 0.36,
+          "median": 0.3983333333333333,
+          "max": 0.45,
           "n": 20
         },
         "disclosure_survival": {
-          "min": 0.75,
-          "median": 0.7947518763302341,
-          "max": 0.8377192982456141,
+          "min": 0.7317073170731707,
+          "median": 0.7975509384723477,
+          "max": 0.8744769874476988,
+          "n": 20
+        },
+        "overcount_if_billed_on_fetch": {
+          "min": 2.857142857142857,
+          "median": 3.125,
+          "max": 3.658536585365854,
           "n": 20
         },
         "clicks_per_1k_fetches": {
-          "min": 5.0,
+          "min": 10.0,
           "median": 15.0,
           "max": 25.0,
           "n": 20
@@ -575,21 +723,27 @@
       {
         "agent": "Sponsorship-averse assistant",
         "inclusion": {
-          "min": 0.045,
-          "median": 0.06166666666666667,
-          "max": 0.08333333333333333,
+          "min": 0.04,
+          "median": 0.056666666666666664,
+          "max": 0.07833333333333334,
           "n": 20
         },
         "disclosure_survival": {
-          "min": 0.9032258064516129,
-          "median": 0.9682459677419355,
+          "min": 0.8709677419354839,
+          "median": 0.9672043010752689,
           "max": 1.0,
+          "n": 20
+        },
+        "overcount_if_billed_on_fetch": {
+          "min": 13.043478260869565,
+          "median": 17.914438502673796,
+          "max": 26.08695652173913,
           "n": 20
         },
         "clicks_per_1k_fetches": {
           "min": 0.0,
-          "median": 0.0,
-          "max": 5.0,
+          "median": 1.6666666666666667,
+          "max": 3.3333333333333335,
           "n": 20
         }
       }

@@ -11,24 +11,16 @@ concurrency:
   group: pages
   cancel-in-progress: true
 jobs:
-  test-and-deploy:
+  test:
+    uses: ./.github/workflows/ci.yml
+  deploy:
+    needs: test
     runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-      - run: pip install pytest && python -m pytest -q
-      - name: Regenerate results and check they match the committed files
-        run: |
-          python -m lab.run && python scripts/build_dashboard.py
-          git diff --exit-code -- docs/results.json docs/index.html || {
-            echo "::error::docs/results.json or docs/index.html is out of date. Run python -m lab.run && python scripts/build_dashboard.py and commit the result."
-            exit 1
-          }
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

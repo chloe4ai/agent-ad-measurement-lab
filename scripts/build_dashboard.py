@@ -74,6 +74,9 @@ a{color:var(--accent)}
     <h2>From fetch to delivered impression</h2>
     <p class="sub">All simulated answers, every agent combined. Each step keeps only what survived the step before.</p>
     <div id="funnel"></div>
+    <h2 style="margin-top:22px">End to end: from declared fetch to delivered impression</h2>
+    <p class="sub" id="e2eSub"></p>
+    <div id="e2e"></div>
   </section>
 
   <section class="card">
@@ -100,6 +103,16 @@ a{color:var(--accent)}
   </section>
 
   <section class="card">
+    <h2>How far to trust the detector</h2>
+    <p class="sub">Inclusion recall depends on what the agent left in the answer. A surviving link or advertiser name is
+    easy; an ad passed on as unbranded wording is found only by word overlap with the original claim.</p>
+    <table id="evidenceTable"></table>
+    <p class="sub" style="margin-top:18px">The simulated agents use a handful of label phrasings the rules were written around.
+    These are the same rules on hand-written answers with other wording.</p>
+    <table id="heldoutTable"></table>
+  </section>
+
+  <section class="card">
     <h2>What the agent fetches</h2>
     <p class="sub">A fixture page as served to an agent: Markdown, with the sponsored block wrapped in machine-readable markers. Publishers and advertisers are fictional.</p>
     <pre id="page"></pre>
@@ -116,7 +129,8 @@ a{color:var(--accent)}
 <script>
 const R = __DATA__;
 const COLORS = ["var(--s1)","var(--s2)","var(--s3)","var(--s4)"];
-const pct = x => (100*x).toFixed(1) + "%";
+const pct = x => x == null ? "n/a" : (100*x).toFixed(1) + "%";
+const times = x => x == null ? "n/a" : x.toFixed(1) + "×";
 const fmt = n => n.toLocaleString("en-US");
 const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const tip = document.getElementById("tip");
@@ -127,9 +141,12 @@ function bindTips(root){ root.querySelectorAll("[data-tip]").forEach(el => {
   el.addEventListener("mousemove", e => showTip(e, el.dataset.tip)); el.addEventListener("mouseleave", hideTip); }); }
 
 // Tiles
-const f = R.funnel, v = R.detector_validation, pf = R.traffic.page_fetches;
+const f = R.funnel, v = R.detector_validation, pf = R.traffic.page_fetches, E = R.end_to_end;
+const overs = R.agents.map(a => a.overcount_if_billed_on_fetch).filter(x => x != null);
+const overRange = overs.length ? ` (${times(Math.min(...overs))} to ${times(Math.max(...overs))} depending on the agent)` : "";
 document.getElementById("tiles").innerHTML = [
-  [f.overcount_if_billed_on_fetch == null ? "n/a" : f.overcount_if_billed_on_fetch.toFixed(1) + "×", "overcount if impressions are billed on fetch instead of delivered, labeled answers"],
+  [times(f.overcount_if_billed_on_fetch), "overcount if impressions are billed on fetch instead of delivered, labeled answers" + overRange],
+  [times(E.overcount_declared_vs_delivered), "end to end: fetches declaring a user-agent token per delivered, labeled answer (projected)"],
   [pct(v.inclusion.precision) + " / " + pct(v.inclusion.recall), "inclusion detector precision / recall against simulated ground truth"],
   [pct(pf.billable_after_rules / pf.declared_user_agent), "of page fetches declaring a user-agent token pass the billing rules"],
 ].map(([val, k]) => `<div class="tile"><div class="v">${val}</div><div class="k">${k}</div></div>`).join("");
@@ -149,7 +166,9 @@ function hbars(el, rows, opts){
     s += `<g data-tip="${esc(r.tip)}" style="cursor:default">`;
     s += `<rect x="0" y="${y-6}" width="${W}" height="${rowH}" fill="transparent"/>`;
     s += `<text class="lbl" x="${left-10}" y="${y+h/2+4}" text-anchor="end">${esc(r.label)}</text>`;
-    s += `<path d="M${x(0)},${y} h${w-4} a4,4 0 0 1 4,4 v${h-8} a4,4 0 0 1 -4,4 h-${w-4} z" fill="${r.color}"/>`;
+    // Bars too short for rounded corners are drawn as a plain sliver.
+    s += w < 8 ? `<rect x="${x(0)}" y="${y}" width="${w}" height="${h}" fill="${r.color}"/>`
+      : `<path d="M${x(0)},${y} h${w-4} a4,4 0 0 1 4,4 v${h-8} a4,4 0 0 1 -4,4 h-${w-4} z" fill="${r.color}"/>`;
     if (r.lo !== undefined) {
       s += `<line x1="${x(r.lo)}" x2="${x(r.hi)}" y1="${y+h/2}" y2="${y+h/2}" stroke="var(--text-primary)" stroke-width="1.5"/>`;
       s += `<line x1="${x(r.lo)}" x2="${x(r.lo)}" y1="${y+h/2-5}" y2="${y+h/2+5}" stroke="var(--text-primary)" stroke-width="1.5"/>`;
@@ -167,6 +186,18 @@ hbars(document.getElementById("funnel"), steps.map(([l, n]) => ({label: l, v: n 
   text: fmt(n), tip: `<b>${l}</b><br>${fmt(n)} answers · ${pct(n / f.fetched)} of fetches`})),
   {aria: "Funnel from fetch to click", W: 960, left: 220, noTicks: true});
 
+// End to end
+const round = n => fmt(Math.round(n));
+const e2e = [["Declare a user-agent token", E.declared_user_agent_fetches], ["Pass the traffic rules", E.pass_traffic_rules],
+  ["Included in the answer", E.projected_included], ["Included and labeled", E.projected_included_and_disclosed],
+  ["Clicked", E.projected_clicks]];
+hbars(document.getElementById("e2e"), e2e.map(([l, n]) => ({label: l, v: n / E.declared_user_agent_fetches, color: "var(--s1)",
+  text: round(n), tip: `<b>${l}</b><br>${round(n)} page fetches · ${pct(n / E.declared_user_agent_fetches)} of declared`})),
+  {aria: "End-to-end funnel from declared fetch to click", W: 960, left: 220, noTicks: true});
+document.getElementById("e2eSub").innerHTML = `Page fetches from the traffic log, filtered by the billing rules, then scaled by the
+  answer-level rates above. A projection: it assumes one fetch feeds one answer and that an invalid fetch reaches nobody.
+  On the simulator's ground truth the same chain gives ${times(E.true_overcount)}.`;
+
 // Per-agent
 document.getElementById("legend").innerHTML = R.agents.map((a, i) =>
   `<span><i style="background:${COLORS[i]}"></i>${esc(a.agent)}</span>`).join("");
@@ -177,10 +208,12 @@ hbars(document.getElementById("inc"), agentRows("inclusion"), {aria: "Inclusion 
 hbars(document.getElementById("dis"), agentRows("disclosure_survival"), {aria: "Disclosure survival by agent", left: 125});
 document.getElementById("agentTable").innerHTML =
   `<tr><th>Agent</th><th class="n">Fetches</th><th class="n">Inclusion</th><th class="n">When relevant</th>
-   <th class="n">Disclosure kept</th><th class="n">Link kept</th><th class="n">Clicks / 1k fetches</th></tr>` +
+   <th class="n">Disclosure kept</th><th class="n">Link kept</th><th class="n">Fetches per delivered, labeled answer</th>
+   <th class="n">Clicks / 1k fetches (95% CI)</th></tr>` +
   R.agents.map(a => `<tr><td>${esc(a.agent)}</td><td class="n">${fmt(a.fetched)}</td><td class="n">${pct(a.inclusion[0])}</td>
    <td class="n">${pct(a.inclusion_when_relevant[0])}</td><td class="n">${pct(a.disclosure_survival[0])}</td>
-   <td class="n">${pct(a.link_survival[0])}</td><td class="n">${a.clicks_per_1k_fetches.toFixed(1)}</td></tr>`).join("");
+   <td class="n">${pct(a.link_survival[0])}</td><td class="n">${times(a.overcount_if_billed_on_fetch)}</td>
+   <td class="n">${a.clicks_per_1k_fetches == null ? "n/a" : `${a.clicks_per_1k_fetches.toFixed(1)} (${(1000*a.click_rate[1]).toFixed(1)}–${(1000*a.click_rate[2]).toFixed(1)})`}</td></tr>`).join("");
 
 // Traffic
 const tr = [["Declare a user-agent token", pf.declared_user_agent, "var(--neutral)"],
@@ -203,6 +236,17 @@ document.getElementById("sweepTable").innerHTML = sw.length ?
    <td class="n">${fmt(r.invalid_page_fetches_billed)}</td>
    <td class="n">${r.billable_vs_truth == null ? "n/a" : (r.billable_vs_truth >= 0 ? "+" : "") + pct(r.billable_vs_truth)}</td></tr>`).join("") : "";
 if (!sw.length) document.getElementById("sweepSub").style.display = "none";
+document.getElementById("evidenceTable").innerHTML =
+  `<tr><th>What the answer kept</th><th class="n">Answers with the ad</th><th class="n">Detected</th><th class="n">Recall</th></tr>` +
+  v.inclusion.recall_by_evidence.map(r => `<tr><td>${esc(r.evidence[0].toUpperCase() + r.evidence.slice(1))}</td>
+   <td class="n">${fmt(r.answers)}</td><td class="n">${fmt(r.detected)}</td><td class="n">${pct(r.recall)}</td></tr>`).join("");
+const ho = v.heldout || {};
+document.getElementById("heldoutTable").innerHTML =
+  `<tr><th>Rule</th><th class="n">Held-out answers</th><th class="n">Precision</th><th class="n">Recall</th>
+   <th class="n">In-sample precision</th><th class="n">In-sample recall</th></tr>` +
+  [["Disclosure label", "disclosure"], ["Inclusion, no name or link", "inclusion"]].filter(([, k]) => ho[k]).map(([l, k]) =>
+   `<tr><td>${l}</td><td class="n">${fmt(ho[k].cases)}</td><td class="n">${pct(ho[k].precision)}</td><td class="n">${pct(ho[k].recall)}</td>
+    <td class="n">${pct(v[k].precision)}</td><td class="n">${pct(v[k].recall)}</td></tr>`).join("");
 document.getElementById("page").textContent = R.sample_page;
 document.getElementById("examples").innerHTML = R.examples.map(e =>
   `<div class="ex"><div class="meta">${esc(e.agent)} · “${esc(e.query)}”</div>

@@ -39,6 +39,13 @@ DISCLOSURE_STYLES = (
     "{adv} paid to place this suggestion.",
     "Note: this is an advertisement from {adv}.",
 )
+# Labels an agent writes when it has dropped the advertiser's name.
+GENERIC_DISCLOSURE_STYLES = (
+    "(Sponsored.)",
+    "This suggestion is a paid placement.",
+    "Note: this is an advertisement.",
+)
+GENERIC_BRAND = "One brand"
 
 
 @dataclass(frozen=True)
@@ -49,13 +56,14 @@ class AgentProfile:
     p_keep_disclosure: float     # given included, keep a sponsorship label
     p_keep_link: float           # given included, keep the tracked link
     paraphrase: float            # 0 = verbatim claim, 1 = heavy rewrite
+    p_strip_brand: float = 0.0   # given included, replace the advertiser's name with "one brand"
 
 
 PROFILES = (
-    AgentProfile("Faithful assistant", 0.85, 0.30, 0.92, 0.80, 0.10),
-    AgentProfile("Summarizing assistant", 0.70, 0.20, 0.45, 0.25, 0.75),
-    AgentProfile("Search assistant", 0.65, 0.15, 0.80, 0.95, 0.30),
-    AgentProfile("Sponsorship-averse assistant", 0.10, 0.02, 0.95, 0.50, 0.40),
+    AgentProfile("Faithful assistant", 0.85, 0.30, 0.92, 0.80, 0.10, 0.02),
+    AgentProfile("Summarizing assistant", 0.70, 0.20, 0.45, 0.25, 0.75, 0.35),
+    AgentProfile("Search assistant", 0.65, 0.15, 0.80, 0.95, 0.30, 0.10),
+    AgentProfile("Sponsorship-averse assistant", 0.10, 0.02, 0.95, 0.50, 0.40, 0.30),
 )
 
 
@@ -70,6 +78,7 @@ class Answer:
     truth_included: bool
     truth_disclosed: bool
     truth_linked: bool
+    truth_brand_named: bool = False  # the advertiser's name is in the answer text
 
 
 def paraphrase(sentence: str, strength: float, rng: random.Random) -> str:
@@ -96,23 +105,31 @@ def answer(profile: AgentProfile, page: Page, query: Query, rng: random.Random) 
     included = rng.random() < p_inc
     disclosed = linked = False
     if included:
-        claim = paraphrase(rng.choice(ad.claims), profile.paraphrase, rng)
+        claim = rng.choice(ad.claims)
+        # Some agents pass on the claim but not who made it ("one brand offers...").
+        stripped = rng.random() < profile.p_strip_brand
+        if stripped:
+            claim = re.sub(re.escape(ad.advertiser), GENERIC_BRAND, claim, flags=re.I)
+        claim = paraphrase(claim, profile.paraphrase, rng)
         ad_part = claim.rstrip(".") + "."
         disclosed = rng.random() < profile.p_keep_disclosure
         linked = rng.random() < profile.p_keep_link
         if disclosed:
-            ad_part += " " + rng.choice(DISCLOSURE_STYLES).format(adv=ad.advertiser)
+            styles = GENERIC_DISCLOSURE_STYLES if stripped else DISCLOSURE_STYLES
+            ad_part += " " + rng.choice(styles).format(adv=ad.advertiser)
         if linked:
             ad_part += f" [{ad.cta_text}]({ad.click_url})"
         parts.insert(rng.randint(1, len(parts)), ad_part)
 
+    text = " ".join(parts)
     return Answer(
         agent=profile.name,
         page_id=page.page_id,
         query=query.q,
         ad_relevant=query.ad_relevant,
-        text=" ".join(parts),
+        text=text,
         truth_included=included,
         truth_disclosed=disclosed,
         truth_linked=linked,
+        truth_brand_named=ad.advertiser.lower() in text.lower(),
     )

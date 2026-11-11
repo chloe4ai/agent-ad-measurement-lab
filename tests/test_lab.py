@@ -247,6 +247,20 @@ def test_real_answers_are_collected_once_and_resumed(tmp_path):
     rows = real.read_rows(out)
     assert all(r["human"] == {"included": None, "disclosed": None, "framing": None} for r in rows)
     assert real.collect(_fake_provider(calls), ["m1"], ["unmarked", "json-ld"], out=out, log=lambda *_: None) == 0
+    assert all(r["click_url_form"] == "absolute" and "https://" in u for r, (_, u) in zip(rows, calls))
+
+
+def test_answers_collected_with_a_bare_path_link_are_kept_apart_from_full_url_ones(tmp_path):
+    from lab import real
+    out = tmp_path / "a.jsonl"
+    total = sum(len(p.queries) for p in PAGES)
+    real.collect(_fake_provider([]), ["m1"], ["unmarked"], out=out, log=lambda *_: None)
+    old = [{k: v for k, v in r.items() if k != "click_url_form"} for r in real.read_rows(out)]  # first-run rows had no field
+    out.write_text("".join(json.dumps(r) + "\n" for r in old))
+    # The earlier rows do not count as done, so the full-URL run is collected in full alongside them.
+    assert real.collect(_fake_provider([]), ["m1"], ["unmarked"], out=out, log=lambda *_: None) == total
+    forms = [g["click_url_form"] for g in real.score(real.read_rows(out))["by_model_and_format"]]
+    assert forms == ["absolute", "relative"]
 
 
 def test_a_failed_call_is_skipped_and_retried_on_the_next_run(tmp_path):
@@ -291,8 +305,9 @@ def test_committed_real_results_match_the_answers_file_and_the_readme():
     assert json.loads(json.dumps(res)) == json.loads((root / "docs" / "real_results.json").read_text())
     readme = (root / "README.md").read_text()
     for h in res["human_by_model_and_format"]:
-        assert (f"| `{h['format']}` | {h['labeled']} | {h['included']} | {h['names_advertiser']} | {h['disclosed']} | "
-                f"{h['framing']['discounted']} | {h['linked']} |") in readme
+        assert (f"| `{h['format']}` | {h['click_url_form']} | {h['labeled']} | {h['included']} | "
+                f"{h['names_advertiser']} | {h['disclosed']} | {h['framing']['discounted']} | {h['linked']} | "
+                f"{h['any_link']} |") in readme
     v = res["detector_vs_human"]["inclusion"]
     assert f"found {v['tp']} of the {v['tp'] + v['fn']}" in readme
 

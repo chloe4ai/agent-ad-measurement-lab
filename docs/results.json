@@ -10,7 +10,7 @@
       0.25
     ]
   },
-  "sample_page": "# Why your sleep gets worse in your forties\n_Northwind Daily_\n\nSleep architecture changes with age: deep sleep shortens and night waking becomes more frequent.\n\nResearchers point to shifting melatonin rhythms, caffeine sensitivity and late screen use as the main levers people can control.\n\n<!-- agent-ad id=\"ad-luma-07\" advertiser=\"Luma Rest\" -->\n> Sponsored content. Supplied by Luma Rest.\n>\n> - Luma Rest's cooling mattress topper lowers surface temperature by up to 3 degrees overnight.\n> - Luma Rest offers a 100-night home trial with free returns.\n> - [Try Luma Rest for 100 nights](/c/luma-q4/topper?i=ad-luma-07)\n<!-- /agent-ad -->\n\nA consistent wake time does more for sleep quality than a consistent bedtime.\n\nKeeping the bedroom cool, around 18 degrees Celsius, helps most adults fall asleep faster.\n",
+  "sample_page": "# Why your sleep gets worse in your forties\n_Northwind Daily_\n\nSleep architecture changes with age: deep sleep shortens and night waking becomes more frequent.\n\nResearchers point to shifting melatonin rhythms, caffeine sensitivity and late screen use as the main levers people can control.\n\n<!-- agent-ad id=\"ad-luma-07\" advertiser=\"Luma Rest\" -->\n> Sponsored content. Supplied by Luma Rest.\n>\n> - Luma Rest's cooling mattress topper lowers surface temperature by up to 3 degrees overnight.\n> - Luma Rest offers a 100-night home trial with free returns.\n> - [Try Luma Rest for 100 nights](https://www.lumarest.example/c/luma-q4/topper?i=ad-luma-07)\n<!-- /agent-ad -->\n\nA consistent wake time does more for sleep quality than a consistent bedtime.\n\nKeeping the bedroom cool, around 18 degrees Celsius, helps most adults fall asleep faster.\n",
   "agents": [
     {
       "agent": "Faithful assistant",
@@ -382,7 +382,7 @@
     {
       "agent": "Faithful assistant",
       "query": "why do I wake up at 3am every night",
-      "answer": "Keeping the bedroom cool, around 18 degrees Celsius, helps most adults fall asleep faster. Luma Rest offers a 100-night home trial with free returns. [Try Luma Rest for 100 nights](/c/luma-q4/topper?i=ad-luma-07) Researchers point to shifting melatonin rhythms, caffeine sensitivity and late screen use as the main levers people can control.",
+      "answer": "Keeping the bedroom cool, around 18 degrees Celsius, helps most adults fall asleep faster. Luma Rest offers a 100-night home trial with free returns. [Try Luma Rest for 100 nights](https://www.lumarest.example/c/luma-q4/topper?i=ad-luma-07) Researchers point to shifting melatonin rhythms, caffeine sensitivity and late screen use as the main levers people can control.",
       "detected_by": "tracked-link",
       "disclosed": false
     },
@@ -396,7 +396,7 @@
     {
       "agent": "Summarizing assistant",
       "query": "does caffeine affect deep sleep",
-      "answer": "Researchers point to shifting melatonin rhythms, caffeine sensitivity and late screen use as the main levers people control. Luma Rest's cooling mattress reduces sleeping-surface temp by up degrees through the night. [Try Luma Rest for 100 nights](/c/luma-q4/topper?i=ad-luma-07) A consistent wake time does more for sleep quality than a consistent bedtime.",
+      "answer": "Researchers point to shifting melatonin rhythms, caffeine sensitivity and late screen use as the main levers people control. Luma Rest's cooling mattress reduces sleeping-surface temp by up degrees through the night. [Try Luma Rest for 100 nights](https://www.lumarest.example/c/luma-q4/topper?i=ad-luma-07) A consistent wake time does more for sleep quality than a consistent bedtime.",
       "detected_by": "tracked-link",
       "disclosed": false
     },
@@ -410,14 +410,14 @@
     {
       "agent": "Search assistant",
       "query": "what battery health percentage is good for a used EV",
-      "answer": "A battery health report estimates remaining capacity as a percentage of the original pack. VoltCheck reports come with a cell-level map and a resale value valuation. VoltCheck paid to place this suggestion. [Book a VoltCheck battery test](/c/voltcheck-q4/book?i=ad-voltcheck-02) Most packs lose capacity quickly the first two years and then settle into a slow decline.",
+      "answer": "A battery health report estimates remaining capacity as a percentage of the original pack. VoltCheck reports come with a cell-level map and a resale value valuation. VoltCheck paid to place this suggestion. [Book a VoltCheck battery test](https://www.voltcheck.example/c/voltcheck-q4/book?i=ad-voltcheck-02) Most packs lose capacity quickly the first two years and then settle into a slow decline.",
       "detected_by": "tracked-link",
       "disclosed": true
     },
     {
       "agent": "Search assistant",
       "query": "why do I wake up at 3am every night",
-      "answer": "Keeping the bedroom cool, around 18 degrees Celsius, helps most adults fall asleep faster. One brand's topper reduces sleeping-surface temperature by up to 3 degrees. [Try Luma Rest for 100 nights](/c/luma-q4/topper?i=ad-luma-07) Researchers point to shifting melatonin rhythms, caffeine sensitivity and late screen use as the main levers people can control.",
+      "answer": "Keeping the bedroom cool, around 18 degrees Celsius, helps most adults fall asleep faster. One brand's topper reduces sleeping-surface temperature by up to 3 degrees. [Try Luma Rest for 100 nights](https://www.lumarest.example/c/luma-q4/topper?i=ad-luma-07) Researchers point to shifting melatonin rhythms, caffeine sensitivity and late screen use as the main levers people can control.",
       "detected_by": "tracked-link",
       "disclosed": false
     },

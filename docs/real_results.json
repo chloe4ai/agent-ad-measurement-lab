@@ -4,6 +4,7 @@
     {
       "model": "claude-opus-5-5",
       "format": "comment-blockquote",
+      "click_url_form": "relative",
       "answers": 12,
       "inclusion": [
         0.08333333333333333,
@@ -25,6 +26,7 @@
     {
       "model": "claude-opus-5-5",
       "format": "inline-label",
+      "click_url_form": "relative",
       "answers": 12,
       "inclusion": [
         0.16666666666666666,
@@ -46,6 +48,7 @@
     {
       "model": "claude-opus-5-5",
       "format": "json-ld",
+      "click_url_form": "relative",
       "answers": 12,
       "inclusion": [
         0.08333333333333333,
@@ -67,6 +70,7 @@
     {
       "model": "claude-opus-5-5",
       "format": "unmarked",
+      "click_url_form": "relative",
       "answers": 12,
       "inclusion": [
         0.25,
@@ -90,11 +94,13 @@
     {
       "model": "claude-opus-5-5",
       "format": "comment-blockquote",
+      "click_url_form": "relative",
       "labeled": 12,
       "included": 2,
       "disclosed": 2,
       "names_advertiser": 1,
       "linked": 0,
+      "any_link": 0,
       "framing": {
         "passed on": 0,
         "neutral": 0,
@@ -104,11 +110,13 @@
     {
       "model": "claude-opus-5-5",
       "format": "inline-label",
+      "click_url_form": "relative",
       "labeled": 12,
       "included": 5,
       "disclosed": 5,
       "names_advertiser": 2,
       "linked": 0,
+      "any_link": 0,
       "framing": {
         "passed on": 0,
         "neutral": 0,
@@ -118,11 +126,13 @@
     {
       "model": "claude-opus-5-5",
       "format": "json-ld",
+      "click_url_form": "relative",
       "labeled": 12,
       "included": 3,
       "disclosed": 3,
       "names_advertiser": 1,
       "linked": 0,
+      "any_link": 0,
       "framing": {
         "passed on": 0,
         "neutral": 0,
@@ -132,11 +142,13 @@
     {
       "model": "claude-opus-5-5",
       "format": "unmarked",
+      "click_url_form": "relative",
       "labeled": 12,
       "included": 3,
       "disclosed": 3,
       "names_advertiser": 3,
       "linked": 0,
+      "any_link": 0,
       "framing": {
         "passed on": 0,
         "neutral": 0,

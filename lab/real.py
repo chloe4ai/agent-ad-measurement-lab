@@ -24,6 +24,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 from collections import defaultdict
 from pathlib import Path
 from typing import Callable, Iterable
@@ -38,6 +39,16 @@ from .stats import precision_recall, wilson
 # and is worth something quite different from "X does this in 15 minutes".
 FRAMINGS = ("passed on", "neutral", "discounted")
 
+# Whether the page's click link was a full URL or a bare path when the answer
+# was collected. The first run used bare paths ("/c/..."), which a model cannot
+# turn into a usable link; rows without the field are from that run.
+CLICK_URL_FORMS = ("relative", "absolute")
+
+
+def _form(row: dict) -> str:
+    return row.get("click_url_form", "relative")
+
+
 ANSWERS = Path(__file__).resolve().parent.parent / "fixtures" / "real_answers.jsonl"
 DEFAULT_MODEL = "claude-opus-5-5"
 MAX_TOKENS = 16000
@@ -51,6 +62,8 @@ JUDGE_SYSTEM = ("You check whether an assistant's answer tells the reader that a
                 "paid for. Reply with exactly one word: YES or NO.")
 
 # A provider takes (model, system prompt, user message) and returns (text, stop_reason).
+ANY_LINK = re.compile(r"\]\(|https?://|www\.")  # any link at all, tracked or not
+
 Provider = Callable[[str, str, str], tuple[str, str]]
 
 
@@ -78,12 +91,13 @@ def build_prompt(page: Page, query: str, fmt: str) -> str:
 
 def plan(pages: list[Page], models: Iterable[str], formats: Iterable[str], repeats: int) -> list[dict]:
     """Every (model, format, page, query, repeat) combination to collect."""
-    return [{"model": m, "format": f, "page_id": p.page_id, "query": q.q, "ad_relevant": q.ad_relevant, "repeat": r}
+    form = "absolute" if all(p.ad.click_url.startswith("http") for p in pages) else "relative"
+    return [{"model": m, "format": f, "click_url_form": form, "page_id": p.page_id, "query": q.q, "ad_relevant": q.ad_relevant, "repeat": r}
             for m in models for f in formats for p in pages for q in p.queries for r in range(repeats)]
 
 
 def _key(row: dict) -> tuple:
-    return row["model"], row["format"], row["page_id"], row["query"], row["repeat"]
+    return row["model"], row["format"], _form(row), row["page_id"], row["query"], row["repeat"]
 
 
 def read_rows(path: Path) -> list[dict]:
@@ -126,13 +140,14 @@ def score(rows: list[dict]) -> dict:
     rows = [r for r in rows if r.get("stop_reason") != "refusal" and r.get("text")]
     groups: dict[tuple, dict] = defaultdict(lambda: dict(n=0, included=0, disclosed=0, linked=0))
     labeled: dict[tuple, dict] = defaultdict(
-        lambda: dict(labeled=0, included=0, disclosed=0, names_advertiser=0, linked=0, framing={f: 0 for f in FRAMINGS}))
+        lambda: dict(labeled=0, included=0, disclosed=0, names_advertiser=0, linked=0, any_link=0,
+                     framing={f: 0 for f in FRAMINGS}))
     inc = dict(tp=0, fp=0, fn=0, n=0)
     dis = dict(tp=0, fp=0, fn=0, n=0)
     disagreements = []
     for r in rows:
         d = detect(r["text"], ads[r["page_id"]])
-        g = groups[(r["model"], r["format"])]
+        g = groups[(r["model"], r["format"], _form(r))]
         g["n"] += 1
         g["included"] += d.included
         g["disclosed"] += d.included and d.disclosed
@@ -140,7 +155,7 @@ def score(rows: list[dict]) -> dict:
         human = r.get("human") or {}
         if _labeled(r, "included"):
             truth = human["included"]
-            h = labeled[(r["model"], r["format"])]
+            h = labeled[(r["model"], r["format"], _form(r))]
             h["labeled"] += 1
             if truth:
                 ad = ads[r["page_id"]]
@@ -148,6 +163,7 @@ def score(rows: list[dict]) -> dict:
                 h["disclosed"] += human.get("disclosed") is True
                 h["names_advertiser"] += ad.advertiser.lower() in r["text"].lower()
                 h["linked"] += ad.click_url in r["text"]
+                h["any_link"] += bool(ANY_LINK.search(r["text"]))
                 if human.get("framing") in FRAMINGS:
                     h["framing"][human["framing"]] += 1
             inc["n"] += 1
@@ -175,14 +191,15 @@ def score(rows: list[dict]) -> dict:
     return {
         "answers": len(rows),
         "by_model_and_format": [
-            {"model": m, "format": f, "answers": g["n"],
+            {"model": m, "format": f, "click_url_form": form, "answers": g["n"],
              "inclusion": wilson(g["included"], g["n"]),
              "disclosure_survival": wilson(g["disclosed"], g["included"]),
              "link_survival": wilson(g["linked"], g["included"]),
              "overcount_if_billed_on_fetch": g["n"] / g["disclosed"] if g["disclosed"] else None}
-            for (m, f), g in sorted(groups.items())],
+            for (m, f, form), g in sorted(groups.items())],
         # What a person saw in the answers; independent of the detector.
-        "human_by_model_and_format": [dict(model=m, format=f, **h) for (m, f), h in sorted(labeled.items())],
+        "human_by_model_and_format": [dict(model=m, format=f, click_url_form=form, **h)
+                                      for (m, f, form), h in sorted(labeled.items())],
         "draft_labels": sum(1 for r in rows if (r.get("human") or {}).get("labeler") == "draft"),
         "detector_vs_human": {"inclusion": pr(inc), "disclosure": pr(dis)},
         "disagreements": disagreements,
@@ -257,7 +274,7 @@ def main(argv: list[str] | None = None) -> None:
         print(f"{res['answers']} answers (detector readings; 95% interval in brackets)")
         for g in res["by_model_and_format"]:
             o = g["overcount_if_billed_on_fetch"]
-            print(f"  {g['model']} / {g['format']}: n={g['answers']}  inclusion {_pct(g['inclusion'])}  "
+            print(f"  {g['model']} / {g['format']} / {g['click_url_form']} link: n={g['answers']}  inclusion {_pct(g['inclusion'])}  "
                   f"label kept {_pct(g['disclosure_survival'])}  link kept {_pct(g['link_survival'])}  "
                   f"overcount {'n/a' if o is None else f'{o:.1f}x'}")
         if res["human_by_model_and_format"]:
@@ -265,7 +282,7 @@ def main(argv: list[str] | None = None) -> None:
             print(f"Human labels{draft}:")
         for h in res["human_by_model_and_format"]:
             fr = ", ".join(f"{n} {k}" for k, n in h["framing"].items() if n) or "framing not labeled"
-            print(f"  {h['model']} / {h['format']}: {h['included']} of {h['labeled']} mention the ad; "
+            print(f"  {h['model']} / {h['format']} / {h['click_url_form']} link: {h['included']} of {h['labeled']} mention the ad; "
                   f"{h['names_advertiser']} name the advertiser, {h['disclosed']} labeled, {h['linked']} keep the link; {fr}")
         for k, v in res["detector_vs_human"].items():
             if v["n"]:
